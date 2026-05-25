@@ -1,0 +1,12 @@
+{
+  "name": "quiniela-mundial-2026",
+  "version": "1.0.0",
+  "description": "Quiniela Mundial 2026",
+  "scripts": {
+    "build": "cd backend && npm install",
+    "start": "cd backend && node server.js"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}

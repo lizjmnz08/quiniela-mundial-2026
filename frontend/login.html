@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Iniciar Sesión - Quiniela Mundial 2026</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1f2e 0%, #1a3a4a 50%, #0d2b3a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .login-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+        .logo { text-align: center; font-size: 4em; margin-bottom: 20px; }
+        h1 { text-align: center; color: #FFD700; margin-bottom: 30px; font-size: 1.8em; }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #c4e0f0; font-weight: bold; }
+        input {
+            width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.3); border-radius: 10px;
+            color: white; font-size: 1em; transition: all 0.3s;
+        }
+        input:focus { outline: none; border-color: #FFD700; background: rgba(255, 255, 255, 0.15); }
+        .btn {
+            width: 100%; padding: 12px; background: linear-gradient(45deg, #FFD700, #FFA500);
+            border: none; border-radius: 10px; font-weight: bold; font-size: 1.1em;
+            cursor: pointer; transition: all 0.3s; margin-top: 10px;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); }
+        .register-link { text-align: center; margin-top: 20px; color: #a0c4d8; }
+        .register-link a { color: #FFD700; text-decoration: none; }
+        .error-message {
+            border-radius: 10px; padding: 10px; margin-top: 15px;
+            text-align: center; display: none;
+            background: rgba(255, 0, 0, 0.2); border: 1px solid #ff4444; color: #ff8888;
+        }
+        .loading { text-align: center; color: #FFD700; margin-top: 10px; display: none; }
+        .watermark {
+            position: fixed; bottom: 15px; right: 20px; font-size: 12px;
+            color: rgba(255, 255, 255, 0.25); background: rgba(0, 0, 0, 0.3);
+            padding: 5px 12px; border-radius: 20px; backdrop-filter: blur(5px);
+            pointer-events: none; z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="watermark">🏆 Lizjmnz08</div>
+    <div class="login-container">
+        <div class="logo">⚽🏆⚽</div>
+        <h1>Quiniela Mundial 2026</h1>
+        <form id="loginForm">
+            <div class="input-group">
+                <label>👤 Usuario</label>
+                <input type="text" id="username" placeholder="Ingresa tu usuario" required>
+            </div>
+            <div class="input-group">
+                <label>🔒 Contraseña</label>
+                <input type="password" id="password" placeholder="Ingresa tu contraseña" required>
+            </div>
+            <button type="submit" class="btn">🚪 Iniciar Sesión</button>
+        </form>
+        <div id="loadingMessage" class="loading">⏳ Conectando con el servidor...</div>
+        <div id="errorMessage" class="error-message"></div>
+        <div class="register-link">
+            ¿No tienes cuenta? <a href="register.html">Regístrate aquí</a>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loadingMsg = document.getElementById('loadingMessage');
+            const errorMsg = document.getElementById('errorMessage');
+            
+            loadingMsg.style.display = 'block';
+            errorMsg.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    if (data.user.role === 'admin') {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                } else {
+                    errorMsg.textContent = data.error || '❌ Usuario o contraseña incorrectos';
+                    errorMsg.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                errorMsg.textContent = '❌ Error al conectar con el servidor';
+                errorMsg.style.display = 'block';
+            } finally {
+                loadingMsg.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

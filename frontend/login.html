@@ -81,38 +81,55 @@
             flex: 0 0 auto;
         }
         
-        /* Estilos para el modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal.active { display: flex; }
-        .modal-content {
-            background: linear-gradient(135deg, #1e4a5f, #153a4a);
-            padding: 35px;
-            border-radius: 30px;
-            max-width: 650px;
-            width: 90%;
-            text-align: center;
-            border: 2px solid rgba(255, 215, 0, 0.4);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-        }
-        .modal h2 { color: #FFD700; margin-bottom: 20px; }
-        .modal-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 25px;
-        }
+            /* Estilos para el modal del instructivo */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background: linear-gradient(135deg, #1e4a5f, #153a4a);
+        padding: 35px;
+        border-radius: 30px;
+        max-width: 650px;
+        width: 90%;
+        text-align: center;
+        border: 2px solid rgba(255, 215, 0, 0.4);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        position: relative;
+    }
+
+    .modal-content h3 {
+        color: #FFD700;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    .modal-content p {
+        color: #ffffff;
+        line-height: 1.5;
+        margin-bottom: 8px;
+    }
+
+    .modal-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 25px;
+    }
     </style>
 </head>
 <body>
@@ -147,49 +164,56 @@
     </div>
 
     <!-- Modal Instructivo -->
-    <div id="instructivoModal" class="modal">
-        <div class="modal-content" style="max-width: 650px;">
-            <span onclick="cerrarInstructivo()" style="float: right; font-size: 28px; cursor: pointer; color: #FFD700;">&times;</span>
-            <h2 style="color: #FFD700; margin-bottom: 20px;">📖 INSTRUCTIVO DE LA QUINIELA</h2>
+<div id="instructivoModal" class="modal">
+    <div class="modal-content" style="max-width: 650px;">
+        <span onclick="cerrarInstructivo()" style="float: right; font-size: 28px; cursor: pointer; color: #FFD700; position: absolute; right: 25px; top: 15px;">&times;</span>
+        <h2 style="color: #FFD700; margin-bottom: 20px; text-align: center;">📖 INSTRUCTIVO DE LA QUINIELA</h2>
+        
+        <div style="text-align: left; max-height: 500px; overflow-y: auto; padding-right: 15px;">
             
-            <div style="text-align: left; max-height: 500px; overflow-y: auto; padding-right: 10px;">
-                <h3 style="color: #FFD700; margin-top: 15px;">🎯 ¿CÓMO FUNCIONA?</h3>
-                <p>1. <strong>Regístrate</strong> con tu nombre y correo electrónico.</p>
-                <p>2. <strong>Inicia sesión</strong> con tu usuario y contraseña.</p>
-                <p>3. <strong>Predice los resultados</strong> de todos los partidos del Mundial 2026.</p>
-                <p>4. <strong>Guarda tus predicciones</strong> para que queden registradas.</p>
-                <p>5. <strong>Compite con tus amigos</strong> en el ranking de puntos.</p>
-                
-                <h3 style="color: #FFD700; margin-top: 20px;">⭐ SISTEMA DE PUNTUACIÓN</h3>
-                <p>• <strong>Resultado exacto:</strong> 3 puntos (Fase de grupos) / 6 puntos (Eliminatorias)</p>
-                <p>• <strong>Acertar ganador o empate:</strong> 1 punto (Fase de grupos) / 2 puntos (Eliminatorias)</p>
-                
-                <h3 style="color: #FFD700; margin-top: 20px;">📊 FASES DEL TORNEO</h3>
-                <p>• <strong>Fase de Grupos:</strong> 72 partidos (11/06 al 27/06/2026)</p>
-                <p>• <strong>Octavos de final:</strong> 16 partidos (28/06 al 03/07/2026)</p>
-                <p>• <strong>Cuartos de final:</strong> 8 partidos (04/07 al 07/07/2026)</p>
-                <p>• <strong>Semifinales:</strong> 4 partidos (10/07 y 11/07/2026)</p>
-                <p>• <strong>Tercer puesto:</strong> 1 partido (17/07/2026)</p>
-                <p>• <strong>Gran Final:</strong> 1 partido (18/07/2026)</p>
-                
-                <h3 style="color: #FFD700; margin-top: 20px;">🎮 BOTONES DE LA QUINIELA</h3>
-                <p>• <strong>💾 Guardar Predicciones:</strong> Guarda todas tus predicciones.</p>
-                <p>• <strong>🏆 Ver Ranking:</strong> Muestra la tabla de posiciones.</p>
-                <p>• <strong>🎲 Generar Aleatorio:</strong> Genera predicciones aleatorias.</p>
-                <p>• <strong>🧹 Limpiar Mis Apuestas:</strong> Elimina tus predicciones.</p>
-                <p>• <strong>🗑️ Limpiar Todo:</strong> Reinicia todas las predicciones a 0.</p>
-                
-                <h3 style="color: #FFD700; margin-top: 20px;">👑 PANEL DE ADMINISTRACIÓN</h3>
-                <p>Solo para el administrador (admin/admin123):</p>
-                <p>• Ver todos los usuarios registrados</p>
-                <p>• Limpiar apuestas de usuarios</p>
-                <p>• Eliminar usuarios</p>
-                <p>• Simular resultados de partidos</p>
-            </div>
+            <h3 style="color: #FFD700; margin-top: 15px;">🎯 ¿CÓMO FUNCIONA?</h3>
+            <p>1. <strong>Regístrate</strong> con tu nombre y correo electrónico.</p>
+            <p>2. <strong>Inicia sesión</strong> con tu usuario y contraseña.</p>
+            <p>3. <strong>Predice los resultados</strong> de todos los partidos del Mundial 2026.</p>
+            <p>4. <strong>Guarda tus predicciones</strong> para que queden registradas.</p>
+            <p>5. <strong>Compite con tus amigos</strong> en el ranking de puntos.</p>
             
-            <div class="modal-buttons" style="margin-top: 25px;">
-                <button class="btn btn-primary" onclick="cerrarInstructivo()">✅ Entendido</button>
-            </div>
+            <h3 style="color: #FFD700; margin-top: 20px;">⭐ SISTEMA DE PUNTUACIÓN</h3>
+            <p>• <strong>Resultado exacto:</strong> 3 puntos (Fase de grupos) / 6 puntos (Eliminatorias)</p>
+            <p>• <strong>Acertar ganador o empate:</strong> 1 punto (Fase de grupos) / 2 puntos (Eliminatorias)</p>
+            
+            <h3 style="color: #FFD700; margin-top: 20px;">📊 FASES DEL TORNEO</h3>
+            <p>• <strong>Fase de Grupos:</strong> 72 partidos (11/06 al 27/06/2026)</p>
+            <p>• <strong>Octavos de final:</strong> 16 partidos (28/06 al 03/07/2026)</p>
+            <p>• <strong>Cuartos de final:</strong> 8 partidos (04/07 al 07/07/2026)</p>
+            <p>• <strong>Semifinales:</strong> 4 partidos (10/07 y 11/07/2026)</p>
+            <p>• <strong>Tercer puesto:</strong> 1 partido (17/07/2026)</p>
+            <p>• <strong>Gran Final:</strong> 1 partido (18/07/2026)</p>
+            
+            <h3 style="color: #FFD700; margin-top: 20px;">🎮 BOTONES DE LA QUINIELA</h3>
+            <p>• <strong>💾 Guardar Predicciones:</strong> Guarda todas tus predicciones.</p>
+            <p>• <strong>🏆 Ver Ranking:</strong> Muestra la tabla de posiciones.</p>
+            <p>• <strong>🎲 Generar Aleatorio:</strong> Genera predicciones aleatorias.</p>
+            <p>• <strong>🧹 Limpiar Mis Apuestas:</strong> Elimina tus predicciones.</p>
+            <p>• <strong>🗑️ Limpiar Todo:</strong> Reinicia todas las predicciones a 0.</p>
+            
+            <h3 style="color: #FFD700; margin-top: 20px;">👑 PANEL DE ADMINISTRACIÓN</h3>
+            <p>Solo para el administrador (usuario: <strong>admin</strong>, contraseña: <strong>admin123</strong>):</p>
+            <p>• Ver todos los usuarios registrados</p>
+            <p>• Limpiar apuestas de usuarios</p>
+            <p>• Eliminar usuarios</p>
+            <p>• Simular resultados de partidos</p>
+            
+            <p style="margin-top: 20px; text-align: center; color: #FFD700;">🏆 ¡BUENA SUERTE! 🏆</p>
+        </div>
+        
+        <div style="display: flex; gap: 15px; justify-content: center; margin-top: 25px;">
+            <button class="btn btn-primary" onclick="cerrarInstructivo()" style="padding: 12px 30px;">✅ Entendido</button>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
         </div>
     </div>
 

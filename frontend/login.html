@@ -81,7 +81,7 @@
             flex: 0 0 auto;
         }
         
-          /* Estilos para el modal del instructivo - ULTRA COMPACTO */
+    /* Estilos para el modal del instructivo */
 .modal {
     display: none;
     position: fixed;
@@ -89,7 +89,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(8px);
     z-index: 1000;
     justify-content: center;
@@ -98,7 +98,7 @@
 
 .modal-content {
     background: linear-gradient(135deg, #1e4a5f, #153a4a);
-    border-radius: 20px;
+    border-radius: 25px;
     text-align: center;
     border: 2px solid rgba(255, 215, 0, 0.4);
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
@@ -106,9 +106,9 @@
     overflow: hidden;
 }
 
-/* Scroll personalizado - más delgado */
+/* Scroll personalizado */
 .modal-content div::-webkit-scrollbar {
-    width: 3px;
+    width: 4px;
 }
 
 .modal-content div::-webkit-scrollbar-track {
@@ -121,37 +121,30 @@
     border-radius: 10px;
 }
 
-/* Responsive para móviles muy pequeños */
+/* Responsive para móviles */
 @media (max-width: 480px) {
     .modal-content {
         width: 95% !important;
-        padding: 10px !important;
-        max-height: 90vh !important;
+        padding: 12px !important;
     }
     
     .modal-content h2 {
-        font-size: 0.9em !important;
-        margin-bottom: 5px !important;
+        font-size: 1.1em !important;
     }
     
     .modal-content div {
-        font-size: 0.7em !important;
-        max-height: calc(90vh - 70px) !important;
+        font-size: 0.75em !important;
     }
     
     .modal-content h3 {
-        font-size: 0.75em !important;
-        margin-top: 5px !important;
-    }
-    
-    .modal-content p {
-        margin-bottom: 1px !important;
+        font-size: 0.85em !important;
     }
     
     .btn {
-        padding: 4px 10px !important;
-        font-size: 0.7em !important;
+        padding: 6px 12px !important;
+        font-size: 0.75em !important;
     }
+
 }
     </style>
 </head>
@@ -188,47 +181,53 @@
 
   <!-- Modal Instructivo -->
 <div id="instructivoModal" class="modal">
-    <div class="modal-content" style="max-width: 400px; width: 90%; padding: 15px; max-height: 85vh;">
-        <span onclick="cerrarInstructivo()" style="float: right; font-size: 20px; cursor: pointer; color: #FFD700; position: absolute; right: 12px; top: 8px;">&times;</span>
-        <h2 style="color: #FFD700; margin-bottom: 8px; text-align: center; font-size: 1.1em;">📖 INSTRUCTIVO</h2>
+    <div class="modal-content" style="max-width: 450px; width: 90%; padding: 20px; max-height: 85vh;">
+        <span onclick="cerrarInstructivo()" style="float: right; font-size: 22px; cursor: pointer; color: #FFD700; position: absolute; right: 15px; top: 10px;">&times;</span>
+        <h2 style="color: #FFD700; margin-bottom: 10px; text-align: center; font-size: 1.3em;">📖 INSTRUCTIVO</h2>
         
-        <div style="text-align: left; max-height: calc(85vh - 80px); overflow-y: auto; padding-right: 5px; font-size: 0.75em;">
+        <div style="text-align: left; max-height: calc(85vh - 90px); overflow-y: auto; padding-right: 8px; font-size: 0.85em;">
             
-            <h3 style="color: #FFD700; margin-top: 5px; margin-bottom: 3px; font-size: 0.85em;">🎯 ¿CÓMO FUNCIONA?</h3>
-            <p style="margin-bottom: 2px;">1. <strong>Regístrate</strong> con nombre y email.</p>
-            <p style="margin-bottom: 2px;">2. <strong>Inicia sesión</strong> con usuario y contraseña.</p>
-            <p style="margin-bottom: 2px;">3. <strong>Predice</strong> los resultados de todos los partidos.</p>
-            <p style="margin-bottom: 2px;">4. <strong>Guarda</strong> tus predicciones.</p>
-            <p style="margin-bottom: 2px;">5. <strong>Compite</strong> en el ranking de puntos.</p>
+            <h3 style="color: #FFD700; margin-top: 8px; margin-bottom: 5px; font-size: 0.95em;">🎯 ¿CÓMO FUNCIONA?</h3>
+            <p style="margin-bottom: 3px;">1. <strong>Regístrate</strong> con nombre y email.</p>
+            <p style="margin-bottom: 3px;">2. <strong>Inicia sesión</strong> con usuario y contraseña.</p>
+            <p style="margin-bottom: 3px;">3. <strong>Predice</strong> los resultados de todos los partidos.</p>
+            <p style="margin-bottom: 3px;">4. <strong>Guarda</strong> tus predicciones.</p>
+            <p style="margin-bottom: 3px;">5. <strong>Compite</strong> en el ranking de puntos.</p>
             
-            <h3 style="color: #FFD700; margin-top: 8px; margin-bottom: 3px; font-size: 0.85em;">⭐ PUNTUACIÓN</h3>
-            <p style="margin-bottom: 2px;">• <strong>Resultado exacto:</strong> 3pts (Grupos) / 6pts (Elim)</p>
-            <p style="margin-bottom: 2px;">• <strong>Acertar ganador/empate:</strong> 1pt (Grupos) / 2pts (Elim)</p>
+            <h3 style="color: #FFD700; margin-top: 10px; margin-bottom: 5px; font-size: 0.95em;">⭐ PUNTUACIÓN</h3>
+            <p style="margin-bottom: 3px;">• <strong>Resultado exacto:</strong> 3pts (Grupos) / 6pts (Eliminatorias)</p>
+            <p style="margin-bottom: 3px;">• <strong>Acertar ganador/empate:</strong> 1pt (Grupos) / 2pts (Eliminatorias)</p>
             
-            <h3 style="color: #FFD700; margin-top: 8px; margin-bottom: 3px; font-size: 0.85em;">📊 FASES</h3>
-            <p style="margin-bottom: 2px;">• <strong>Grupos:</strong> 72 partidos (11/06 al 27/06)</p>
-            <p style="margin-bottom: 2px;">• <strong>Octavos:</strong> 16 partidos (28/06 al 03/07)</p>
-            <p style="margin-bottom: 2px;">• <strong>Cuartos:</strong> 8 partidos (04/07 al 07/07)</p>
-            <p style="margin-bottom: 2px;">• <strong>Semis:</strong> 4 partidos (10/07 y 11/07)</p>
-            <p style="margin-bottom: 2px;">• <strong>Tercero:</strong> 1 partido (17/07)</p>
-            <p style="margin-bottom: 2px;">• <strong>Final:</strong> 1 partido (18/07)</p>
+            <h3 style="color: #FFD700; margin-top: 10px; margin-bottom: 5px; font-size: 0.95em;">📊 FASES DEL TORNEO</h3>
+            <p style="margin-bottom: 3px;">• <strong>Grupos:</strong> 72 partidos (11/06 al 27/06)</p>
+            <p style="margin-bottom: 3px;">• <strong>Octavos:</strong> 16 partidos (28/06 al 03/07)</p>
+            <p style="margin-bottom: 3px;">• <strong>Cuartos:</strong> 8 partidos (04/07 al 07/07)</p>
+            <p style="margin-bottom: 3px;">• <strong>Semifinales:</strong> 4 partidos (10/07 y 11/07)</p>
+            <p style="margin-bottom: 3px;">• <strong>Tercer puesto:</strong> 1 partido (17/07)</p>
+            <p style="margin-bottom: 3px;">• <strong>Gran Final:</strong> 1 partido (18/07)</p>
             
-            <h3 style="color: #FFD700; margin-top: 8px; margin-bottom: 3px; font-size: 0.85em;">🎮 BOTONES</h3>
-            <p style="margin-bottom: 2px;">• <strong>💾 Guardar:</strong> Guarda tus predicciones.</p>
-            <p style="margin-bottom: 2px;">• <strong>🏆 Ranking:</strong> Muestra la tabla de posiciones.</p>
-            <p style="margin-bottom: 2px;">• <strong>🎲 Aleatorio:</strong> Genera resultados aleatorios.</p>
-            <p style="margin-bottom: 2px;">• <strong>🧹 Limpiar:</strong> Elimina tus apuestas.</p>
+            <h3 style="color: #FFD700; margin-top: 10px; margin-bottom: 5px; font-size: 0.95em;">🎮 BOTONES DE LA QUINIELA</h3>
+            <p style="margin-bottom: 3px;">• <strong>💾 Guardar:</strong> Guarda todas tus predicciones.</p>
+            <p style="margin-bottom: 3px;">• <strong>🏆 Ranking:</strong> Muestra la tabla de posiciones.</p>
+            <p style="margin-bottom: 3px;">• <strong>🎲 Generar Aleatorio:</strong> Genera resultados aleatorios.</p>
+            <p style="margin-bottom: 3px;">• <strong>🧹 Limpiar Mis Apuestas:</strong> Elimina tus apuestas.</p>
+            <p style="margin-bottom: 3px;">• <strong>🗑️ Limpiar Todo:</strong> Reinicia todas las apuestas a 0.</p>
             
-           <!-- <h3 style="color: #FFD700; margin-top: 8px; margin-bottom: 3px; font-size: 0.85em;">👑 ADMIN</h3>
-            <p style="margin-bottom: 2px;">• Usuario: <strong>admin</strong> / Contraseña: <strong>admin123</strong></p>
-            <p style="margin-bottom: 2px;">• Gestionar usuarios y resultados</p>-->
+            <!--<h3 style="color: #FFD700; margin-top: 10px; margin-bottom: 5px; font-size: 0.95em;">👑 ADMINISTRADOR</h3>
+            <p style="margin-bottom: 3px;">• Usuario: <strong>admin</strong> | Contraseña: <strong>admin123</strong></p>
+            <p style="margin-bottom: 3px;">• Ver todos los usuarios registrados</p>
+            <p style="margin-bottom: 3px;">• Limpiar apuestas de usuarios</p>
+            <p style="margin-bottom: 3px;">• Eliminar usuarios</p>
+            <p style="margin-bottom: 3px;">• Simular resultados de partidos</p>-->
             
-            <p style="margin-top: 8px; text-align: center; color: #FFD700; font-size: 0.8em;">🏆 ¡BUENA SUERTE! 🏆</p>
+            <p style="margin-top: 12px; text-align: center; color: #FFD700; font-weight: bold; font-size: 0.9em;">🏆 ¡BUENA SUERTE! 🏆</p>
         </div>
         
-        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
-            <button class="btn btn-primary" onclick="cerrarInstructivo()" style="padding: 6px 15px; font-size: 0.75em;">✅ Entendido</button>
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 12px;">
+            <button class="btn btn-primary" onclick="cerrarInstructivo()" style="padding: 8px 20px; font-size: 0.85em;">✅ Entendido</button>
         </div>
+    </div>
+</div>
     </div>
 </div>
     </div>

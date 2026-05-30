@@ -89,7 +89,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(8px);
     z-index: 1000;
     justify-content: center;
@@ -104,6 +104,18 @@
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
     position: relative;
     overflow: hidden;
+}
+
+.modal-content p {
+    color: #FFFFFF !important;
+}
+
+.modal-content strong {
+    color: #FFFFFF !important;
+}
+
+.modal-content div {
+    color: #FFFFFF !important;
 }
 
 /* Scroll personalizado */
@@ -185,40 +197,40 @@
         <span onclick="cerrarInstructivo()" style="float: right; font-size: 22px; cursor: pointer; color: #FFD700; position: absolute; right: 15px; top: 10px;">&times;</span>
         <h2 style="color: #FFD700; margin-bottom: 10px; text-align: center; font-size: 1.3em;">📖 INSTRUCTIVO</h2>
         
-        <div style="text-align: left; max-height: calc(85vh - 90px); overflow-y: auto; padding-right: 8px; font-size: 0.85em;">
+        <div style="text-align: left; max-height: calc(85vh - 90px); overflow-y: auto; padding-right: 8px; font-size: 0.85em; color: #FFFFFF;">
             
             <h3 style="color: #FFD700; margin-top: 8px; margin-bottom: 5px; font-size: 0.95em;">🎯 ¿CÓMO FUNCIONA?</h3>
-            <p style="margin-bottom: 3px;">1. <strong>Regístrate</strong> con nombre y email.</p>
-            <p style="margin-bottom: 3px;">2. <strong>Inicia sesión</strong> con usuario y contraseña.</p>
-            <p style="margin-bottom: 3px;">3. <strong>Predice</strong> los resultados de todos los partidos.</p>
-            <p style="margin-bottom: 3px;">4. <strong>Guarda</strong> tus predicciones.</p>
-            <p style="margin-bottom: 3px;">5. <strong>Compite</strong> en el ranking de puntos.</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">1. <strong style="color: #FFFFFF;">Regístrate</strong> con nombre y email.</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">2. <strong style="color: #FFFFFF;">Inicia sesión</strong> con usuario y contraseña.</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">3. <strong style="color: #FFFFFF;">Predice</strong> los resultados de todos los partidos.</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">4. <strong style="color: #FFFFFF;">Guarda</strong> tus predicciones.</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">5. <strong style="color: #FFFFFF;">Compite</strong> en el ranking de puntos.</p>
             
             <h3 style="color: #FFD700; margin-top: 10px; margin-bottom: 5px; font-size: 0.95em;">⭐ PUNTUACIÓN</h3>
-            <p style="margin-bottom: 3px;">• <strong>Resultado exacto:</strong> 3pts (Grupos) / 6pts (Eliminatorias)</p>
-            <p style="margin-bottom: 3px;">• <strong>Acertar ganador/empate:</strong> 1pt (Grupos) / 2pts (Eliminatorias)</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• <strong style="color: #FFFFFF;">Resultado exacto:</strong> 3pts (Grupos) / 6pts (Eliminatorias)</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• <strong style="color: #FFFFFF;">Acertar ganador/empate:</strong> 1pt (Grupos) / 2pts (Eliminatorias)</p>
             
             <h3 style="color: #FFD700; margin-top: 10px; margin-bottom: 5px; font-size: 0.95em;">📊 FASES DEL TORNEO</h3>
-            <p style="margin-bottom: 3px;">• <strong>Grupos:</strong> 72 partidos (11/06 al 27/06)</p>
-            <p style="margin-bottom: 3px;">• <strong>Octavos:</strong> 16 partidos (28/06 al 03/07)</p>
-            <p style="margin-bottom: 3px;">• <strong>Cuartos:</strong> 8 partidos (04/07 al 07/07)</p>
-            <p style="margin-bottom: 3px;">• <strong>Semifinales:</strong> 4 partidos (10/07 y 11/07)</p>
-            <p style="margin-bottom: 3px;">• <strong>Tercer puesto:</strong> 1 partido (17/07)</p>
-            <p style="margin-bottom: 3px;">• <strong>Gran Final:</strong> 1 partido (18/07)</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• <strong style="color: #FFFFFF;">Grupos:</strong> 72 partidos (11/06 al 27/06)</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• <strong style="color: #FFFFFF;">Octavos:</strong> 16 partidos (28/06 al 03/07)</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• <strong style="color: #FFFFFF;">Cuartos:</strong> 8 partidos (04/07 al 07/07)</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• <strong style="color: #FFFFFF;">Semifinales:</strong> 4 partidos (10/07 y 11/07)</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• <strong style="color: #FFFFFF;">Tercer puesto:</strong> 1 partido (17/07)</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• <strong style="color: #FFFFFF;">Gran Final:</strong> 1 partido (18/07)</p>
             
             <h3 style="color: #FFD700; margin-top: 10px; margin-bottom: 5px; font-size: 0.95em;">🎮 BOTONES DE LA QUINIELA</h3>
-            <p style="margin-bottom: 3px;">• <strong>💾 Guardar:</strong> Guarda todas tus predicciones.</p>
-            <p style="margin-bottom: 3px;">• <strong>🏆 Ranking:</strong> Muestra la tabla de posiciones.</p>
-            <p style="margin-bottom: 3px;">• <strong>🎲 Generar Aleatorio:</strong> Genera resultados aleatorios.</p>
-            <p style="margin-bottom: 3px;">• <strong>🧹 Limpiar Mis Apuestas:</strong> Elimina tus apuestas.</p>
-            <p style="margin-bottom: 3px;">• <strong>🗑️ Limpiar Todo:</strong> Reinicia todas las apuestas a 0.</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• <strong style="color: #FFFFFF;">💾 Guardar:</strong> Guarda todas tus predicciones.</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• <strong style="color: #FFFFFF;">🏆 Ranking:</strong> Muestra la tabla de posiciones.</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• <strong style="color: #FFFFFF;">🎲 Generar Aleatorio:</strong> Genera resultados aleatorios.</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• <strong style="color: #FFFFFF;">🧹 Limpiar Mis Apuestas:</strong> Elimina tus apuestas.</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• <strong style="color: #FFFFFF;">🗑️ Limpiar Todo:</strong> Reinicia todas las apuestas a 0.</p>
             
-            <!--<h3 style="color: #FFD700; margin-top: 10px; margin-bottom: 5px; font-size: 0.95em;">👑 ADMINISTRADOR</h3>
-            <p style="margin-bottom: 3px;">• Usuario: <strong>admin</strong> | Contraseña: <strong>admin123</strong></p>
-            <p style="margin-bottom: 3px;">• Ver todos los usuarios registrados</p>
-            <p style="margin-bottom: 3px;">• Limpiar apuestas de usuarios</p>
-            <p style="margin-bottom: 3px;">• Eliminar usuarios</p>
-            <p style="margin-bottom: 3px;">• Simular resultados de partidos</p>-->
+           <!-- <h3 style="color: #FFD700; margin-top: 10px; margin-bottom: 5px; font-size: 0.95em;">👑 ADMINISTRADOR</h3>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• Usuario: <strong style="color: #FFFFFF;">admin</strong> | Contraseña: <strong style="color: #FFFFFF;">admin123</strong></p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• Ver todos los usuarios registrados</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• Limpiar apuestas de usuarios</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• Eliminar usuarios</p>
+            <p style="margin-bottom: 3px; color: #FFFFFF;">• Simular resultados de partidos</p>-->
             
             <p style="margin-top: 12px; text-align: center; color: #FFD700; font-weight: bold; font-size: 0.9em;">🏆 ¡BUENA SUERTE! 🏆</p>
         </div>
@@ -226,6 +238,8 @@
         <div style="display: flex; gap: 10px; justify-content: center; margin-top: 12px;">
             <button class="btn btn-primary" onclick="cerrarInstructivo()" style="padding: 8px 20px; font-size: 0.85em;">✅ Entendido</button>
         </div>
+    </div>
+</div>
     </div>
 </div>
     </div>

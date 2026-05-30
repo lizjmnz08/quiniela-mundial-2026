@@ -124,22 +124,159 @@ async function initMatches() {
         'L': ['🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra', '🇭🇷 Croacia', '🇬🇭 Ghana', '🇵🇦 Panamá']
     };
 
-    // Fase de grupos
-    for (let [grupo, equipos] of Object.entries(grupos)) {
-        for (let i = 0; i < equipos.length; i++) {
-            for (let j = i + 1; j < equipos.length; j++) {
-                partidos.push({ id: id++, fase: 'grupos', grupo, local: equipos[i], visitante: equipos[j], fecha: 'Jun 2026', hora: 'Por definir' });
-            }
-        }
+    // ==================== FASE DE GRUPOS ====================
+    
+    // 11 de Junio
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'A', local: '🇲🇽 México', visitante: '🇿🇦 Sudáfrica', fecha: '11/06/2026', hora: '15:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'A', local: '🇰🇷 Corea del Sur', visitante: '🇨🇿 Chequia', fecha: '11/06/2026', hora: '22:00' });
+    
+    // 12 de Junio
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'B', local: '🇨🇦 Canadá', visitante: '🇧🇦 Bosnia y Herzegovina', fecha: '12/06/2026', hora: '15:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'D', local: '🇺🇸 Estados Unidos', visitante: '🇵🇾 Paraguay', fecha: '12/06/2026', hora: '21:00' });
+    
+    // 13 de Junio
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'B', local: '🇶🇦 Catar', visitante: '🇨🇭 Suiza', fecha: '13/06/2026', hora: '15:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'C', local: '🇧🇷 Brasil', visitante: '🇲🇦 Marruecos', fecha: '13/06/2026', hora: '18:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'C', local: '🇭🇹 Haití', visitante: '🏴󠁧󠁢󠁳󠁣󠁴󠁿 Escocia', fecha: '13/06/2026', hora: '21:00' });
+    
+    // 14 de Junio
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'D', local: '🇦🇺 Australia', visitante: '🇹🇷 Turquía', fecha: '14/06/2026', hora: '00:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'E', local: '🇩🇪 Alemania', visitante: '🇨🇼 Curazao', fecha: '14/06/2026', hora: '13:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'F', local: '🇳🇱 Países Bajos', visitante: '🇯🇵 Japón', fecha: '14/06/2026', hora: '16:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'E', local: '🇨🇮 Costa de Marfil', visitante: '🇪🇨 Ecuador', fecha: '14/06/2026', hora: '19:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'F', local: '🇸🇪 Suecia', visitante: '🇹🇳 Túnez', fecha: '14/06/2026', hora: '22:00' });
+    
+    // 15 de Junio
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'H', local: '🇪🇸 España', visitante: '🇨🇻 Cabo Verde', fecha: '15/06/2026', hora: '12:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'G', local: '🇧🇪 Bélgica', visitante: '🇪🇬 Egipto', fecha: '15/06/2026', hora: '15:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'H', local: '🇸🇦 Arabia Saudita', visitante: '🇺🇾 Uruguay', fecha: '15/06/2026', hora: '18:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'G', local: '🇮🇷 Irán', visitante: '🇳🇿 Nueva Zelanda', fecha: '15/06/2026', hora: '21:00' });
+    
+    // 16 de Junio
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'I', local: '🇫🇷 Francia', visitante: '🇸🇳 Senegal', fecha: '16/06/2026', hora: '15:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'I', local: '🇮🇶 Irak', visitante: '🇳🇴 Noruega', fecha: '16/06/2026', hora: '18:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'J', local: '🇦🇷 Argentina', visitante: '🇩🇿 Argelia', fecha: '16/06/2026', hora: '21:00' });
+    
+    // 17 de Junio
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'J', local: '🇦🇹 Austria', visitante: '🇯🇴 Jordania', fecha: '17/06/2026', hora: '00:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'K', local: '🇵🇹 Portugal', visitante: '🇨🇩 RD Congo', fecha: '17/06/2026', hora: '13:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'L', local: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra', visitante: '🇭🇷 Croacia', fecha: '17/06/2026', hora: '16:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'L', local: '🇬🇭 Ghana', visitante: '🇵🇦 Panamá', fecha: '17/06/2026', hora: '19:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'K', local: '🇺🇿 Uzbekistán', visitante: '🇨🇴 Colombia', fecha: '17/06/2026', hora: '22:00' });
+    
+    // 18 de Junio
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'A', local: '🇨🇿 Chequia', visitante: '🇿🇦 Sudáfrica', fecha: '18/06/2026', hora: '12:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'B', local: '🇨🇭 Suiza', visitante: '🇧🇦 Bosnia y Herzegovina', fecha: '18/06/2026', hora: '15:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'B', local: '🇨🇦 Canadá', visitante: '🇶🇦 Catar', fecha: '18/06/2026', hora: '18:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'A', local: '🇲🇽 México', visitante: '🇰🇷 Corea del Sur', fecha: '18/06/2026', hora: '21:00' });
+    
+    // 19 de Junio
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'D', local: '🇺🇸 Estados Unidos', visitante: '🇦🇺 Australia', fecha: '19/06/2026', hora: '15:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'C', local: '🏴󠁧󠁢󠁳󠁣󠁴󠁿 Escocia', visitante: '🇲🇦 Marruecos', fecha: '19/06/2026', hora: '18:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'C', local: '🇧🇷 Brasil', visitante: '🇭🇹 Haití', fecha: '19/06/2026', hora: '20:30' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'D', local: '🇹🇷 Turquía', visitante: '🇵🇾 Paraguay', fecha: '19/06/2026', hora: '23:00' });
+    
+    // 20 de Junio
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'F', local: '🇳🇱 Países Bajos', visitante: '🇸🇪 Suecia', fecha: '20/06/2026', hora: '13:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'E', local: '🇩🇪 Alemania', visitante: '🇨🇮 Costa de Marfil', fecha: '20/06/2026', hora: '16:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'E', local: '🇪🇨 Ecuador', visitante: '🇨🇼 Curazao', fecha: '20/06/2026', hora: '20:00' });
+    
+    // 21 de Junio
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'F', local: '🇹🇳 Túnez', visitante: '🇯🇵 Japón', fecha: '21/06/2026', hora: '00:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'H', local: '🇪🇸 España', visitante: '🇸🇦 Arabia Saudita', fecha: '21/06/2026', hora: '12:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'G', local: '🇧🇪 Bélgica', visitante: '🇮🇷 Irán', fecha: '21/06/2026', hora: '15:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'H', local: '🇺🇾 Uruguay', visitante: '🇨🇻 Cabo Verde', fecha: '21/06/2026', hora: '18:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'G', local: '🇳🇿 Nueva Zelanda', visitante: '🇪🇬 Egipto', fecha: '21/06/2026', hora: '21:00' });
+    
+    // 22 de Junio
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'J', local: '🇦🇷 Argentina', visitante: '🇦🇹 Austria', fecha: '22/06/2026', hora: '13:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'I', local: '🇫🇷 Francia', visitante: '🇮🇶 Irak', fecha: '22/06/2026', hora: '17:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'I', local: '🇳🇴 Noruega', visitante: '🇸🇳 Senegal', fecha: '22/06/2026', hora: '20:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'J', local: '🇯🇴 Jordania', visitante: '🇩🇿 Argelia', fecha: '22/06/2026', hora: '23:00' });
+    
+    // 23 de Junio
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'K', local: '🇵🇹 Portugal', visitante: '🇺🇿 Uzbekistán', fecha: '23/06/2026', hora: '13:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'L', local: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra', visitante: '🇬🇭 Ghana', fecha: '23/06/2026', hora: '16:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'L', local: '🇵🇦 Panamá', visitante: '🇭🇷 Croacia', fecha: '23/06/2026', hora: '19:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'K', local: '🇨🇴 Colombia', visitante: '🇨🇩 RD Congo', fecha: '23/06/2026', hora: '22:00' });
+    
+    // 24 de Junio
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'B', local: '🇨🇭 Suiza', visitante: '🇨🇦 Canadá', fecha: '24/06/2026', hora: '15:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'B', local: '🇧🇦 Bosnia y Herzegovina', visitante: '🇶🇦 Catar', fecha: '24/06/2026', hora: '15:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'C', local: '🇲🇦 Marruecos', visitante: '🇭🇹 Haití', fecha: '24/06/2026', hora: '18:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'C', local: '🏴󠁧󠁢󠁳󠁣󠁴󠁿 Escocia', visitante: '🇧🇷 Brasil', fecha: '24/06/2026', hora: '18:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'A', local: '🇿🇦 Sudáfrica', visitante: '🇰🇷 Corea del Sur', fecha: '24/06/2026', hora: '21:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'A', local: '🇨🇿 Chequia', visitante: '🇲🇽 México', fecha: '24/06/2026', hora: '21:00' });
+    
+    // 25 de Junio
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'E', local: '🇨🇼 Curazao', visitante: '🇨🇮 Costa de Marfil', fecha: '25/06/2026', hora: '16:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'E', local: '🇪🇨 Ecuador', visitante: '🇩🇪 Alemania', fecha: '25/06/2026', hora: '16:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'F', local: '🇹🇳 Túnez', visitante: '🇳🇱 Países Bajos', fecha: '25/06/2026', hora: '19:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'F', local: '🇯🇵 Japón', visitante: '🇸🇪 Suecia', fecha: '25/06/2026', hora: '19:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'D', local: '🇹🇷 Turquía', visitante: '🇺🇸 Estados Unidos', fecha: '25/06/2026', hora: '22:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'D', local: '🇵🇾 Paraguay', visitante: '🇦🇺 Australia', fecha: '25/06/2026', hora: '22:00' });
+    
+    // 26 de Junio
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'I', local: '🇳🇴 Noruega', visitante: '🇫🇷 Francia', fecha: '26/06/2026', hora: '15:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'I', local: '🇸🇳 Senegal', visitante: '🇮🇶 Irak', fecha: '26/06/2026', hora: '15:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'H', local: '🇨🇻 Cabo Verde', visitante: '🇸🇦 Arabia Saudita', fecha: '26/06/2026', hora: '20:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'H', local: '🇺🇾 Uruguay', visitante: '🇪🇸 España', fecha: '26/06/2026', hora: '20:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'G', local: '🇳🇿 Nueva Zelanda', visitante: '🇧🇪 Bélgica', fecha: '26/06/2026', hora: '23:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'G', local: '🇪🇬 Egipto', visitante: '🇮🇷 Irán', fecha: '26/06/2026', hora: '23:00' });
+    
+    // 27 de Junio
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'L', local: '🇵🇦 Panamá', visitante: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra', fecha: '27/06/2026', hora: '17:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'L', local: '🇭🇷 Croacia', visitante: '🇬🇭 Ghana', fecha: '27/06/2026', hora: '17:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'K', local: '🇨🇴 Colombia', visitante: '🇵🇹 Portugal', fecha: '27/06/2026', hora: '19:30' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'K', local: '🇨🇩 RD Congo', visitante: '🇺🇿 Uzbekistán', fecha: '27/06/2026', hora: '19:30' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'J', local: '🇩🇿 Argelia', visitante: '🇦🇹 Austria', fecha: '27/06/2026', hora: '22:00' });
+    partidos.push({ id: id++, fase: 'grupos', grupo: 'J', local: '🇯🇴 Jordania', visitante: '🇦🇷 Argentina', fecha: '27/06/2026', hora: '22:00' });
+
+    // ==================== ELIMINATORIAS ====================
+    
+    // Octavos de final (16 partidos)
+    const fechasOctavos = ['28/06/2026', '29/06/2026', '30/06/2026', '01/07/2026', '02/07/2026', '03/07/2026'];
+    const horasOctavos = ['15:00', '18:00', '21:00', '12:00', '16:00', '20:00'];
+    
+    for (let i = 0; i < 16; i++) {
+        partidos.push({ 
+            id: id++, 
+            fase: 'octavos', 
+            nombre: 'Octavos de Final', 
+            local: 'Clasificado', 
+            visitante: 'Clasificado', 
+            fecha: fechasOctavos[i % fechasOctavos.length], 
+            hora: horasOctavos[i % horasOctavos.length] 
+        });
     }
+    
+    // Cuartos de final (8 partidos)
+    const fechasCuartos = ['04/07/2026', '05/07/2026', '06/07/2026', '07/07/2026'];
+    const horasCuartos = ['15:00', '18:00', '21:00', '16:00'];
+    
+    for (let i = 0; i < 8; i++) {
+        partidos.push({ 
+            id: id++, 
+            fase: 'cuartos', 
+            nombre: 'Cuartos de Final', 
+            local: 'Clasificado', 
+            visitante: 'Clasificado', 
+            fecha: fechasCuartos[i % fechasCuartos.length], 
+            hora: horasCuartos[i % horasCuartos.length] 
+        });
+    }
+    
+    // Semifinales (4 partidos)
+    partidos.push({ id: id++, fase: 'semis', nombre: 'Semifinal 1', local: 'Clasificado', visitante: 'Clasificado', fecha: '10/07/2026', hora: '15:00' });
+    partidos.push({ id: id++, fase: 'semis', nombre: 'Semifinal 2', local: 'Clasificado', visitante: 'Clasificado', fecha: '11/07/2026', hora: '15:00' });
+    
+    // Tercer puesto
+    partidos.push({ id: id++, fase: 'tercero', nombre: 'Tercer Puesto', local: 'Perdedor SF1', visitante: 'Perdedor SF2', fecha: '17/07/2026', hora: '17:00' });
+    
+    // Gran Final
+    partidos.push({ id: id++, fase: 'final', nombre: '🏆 GRAN FINAL 🏆', local: 'Ganador SF1', visitante: 'Ganador SF2', fecha: '18/07/2026', hora: '18:00' });
 
-    // Eliminatorias
-    for (let i = 1; i <= 16; i++) partidos.push({ id: id++, fase: 'octavos', nombre: 'Octavos', local: 'Clasificado', visitante: 'Clasificado', fecha: 'Jul 2026', hora: 'Por definir' });
-    for (let i = 1; i <= 8; i++) partidos.push({ id: id++, fase: 'cuartos', nombre: 'Cuartos', local: 'Clasificado', visitante: 'Clasificado', fecha: 'Jul 2026', hora: 'Por definir' });
-    for (let i = 1; i <= 4; i++) partidos.push({ id: id++, fase: 'semis', nombre: 'Semifinal', local: 'Clasificado', visitante: 'Clasificado', fecha: 'Jul 2026', hora: 'Por definir' });
-    partidos.push({ id: id++, fase: 'final', nombre: 'FINAL', local: 'Clasificado', visitante: 'Clasificado', fecha: '19/07/2026', hora: '15:00' });
-    partidos.push({ id: id++, fase: 'tercero', nombre: '3er Puesto', local: 'Clasificado', visitante: 'Clasificado', fecha: '18/07/2026', hora: '17:00' });
-
+    // Insertar partidos
     for (const p of partidos) {
         await pool.query(
             `INSERT INTO partidos (id, fase, grupo, local, visitante, fecha, hora, nombre) 
@@ -147,7 +284,8 @@ async function initMatches() {
             [p.id, p.fase, p.grupo, p.local, p.visitante, p.fecha, p.hora, p.nombre]
         );
     }
-    console.log(`✅ ${partidos.length} partidos inicializados`);
+    console.log(`✅ ${partidos.length} partidos inicializados con fechas y horas correctas`);
+
 }
 
 // ========== MIDDLEWARE ==========

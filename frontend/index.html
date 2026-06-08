@@ -233,6 +233,78 @@
             border-radius: 15px;
             text-align: center;
         }
+
+        /* Estilos para el modal de ranking */
+#rankingModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+#rankingModal.active {
+    display: flex;
+}
+
+#rankingModal .modal-content {
+    background: linear-gradient(135deg, #1e4a5f, #153a4a);
+    padding: 35px;
+    border-radius: 30px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    border: 2px solid rgba(255, 215, 0, 0.4);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+.ranking-list {
+    list-style: none;
+    margin-top: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.ranking-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    border-left: 4px solid #FFD700;
+}
+
+.ranking-position {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #FFD700;
+    min-width: 50px;
+}
+
+.ranking-name {
+    flex: 1;
+    text-align: left;
+}
+
+.ranking-points {
+    font-size: 1.2em;
+    color: #FFD700;
+    font-weight: bold;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 25px;
+}
         
       /* Estilos para el modal del instructivo */
 .modal {
@@ -745,27 +817,56 @@
             document.getElementById('progressBar').style.width = pct + '%';
             document.getElementById('progressText').textContent = `${completados}/${total} partidos`;
         }
+        // Función para cerrar el modal de ranking
+    function cerrarModal() {
+    document.getElementById('rankingModal').classList.remove('active');
+}
 
-        async function verRanking() {
-            document.getElementById('rankingModal').classList.add('active');
-            await actualizarRanking();
-        }
+// Función para recalcular el ranking
+    async function recalcularRanking() {
+    await actualizarRanking();
+    alert('✅ Ranking actualizado');
+}
 
-        async function actualizarRanking() {
-            const ranking = await fetchAPI('/ranking');
-            const lista = document.getElementById('rankingList');
-            if (!ranking.length) { 
-                lista.innerHTML = '<li style="text-align:center;">📭 No hay participantes</li>'; 
-                return; 
-            }
-            lista.innerHTML = '';
-            ranking.forEach((item, i) => {
-                const li = document.createElement('li');
-                li.className = 'ranking-item';
-                li.innerHTML = `<span>#${i+1} ${item.fullname || item.username}</span><span style="color:#FFD700; font-weight:bold;">${item.puntos} pts</span>`;
-                lista.appendChild(li);
-            });
+       // Función para mostrar el ranking
+    async function verRanking() {
+    const modal = document.getElementById('rankingModal');
+    if (modal) {
+        modal.classList.add('active');
+        await actualizarRanking();
+    } else {
+        console.error('Modal de ranking no encontrado');
+        alert('Error: No se encontró el modal de ranking');
+    }
+}
+
+        // Función para actualizar la lista de ranking
+async function actualizarRanking() {
+    try {
+        const ranking = await fetchAPI('/ranking');
+        const lista = document.getElementById('rankingList');
+        if (!lista) return;
+        
+        if (!ranking || ranking.length === 0) {
+            lista.innerHTML = '<li style="text-align:center;">📭 No hay participantes</li>';
+            return;
         }
+        
+        lista.innerHTML = '';
+        ranking.forEach((item, i) => {
+            const li = document.createElement('li');
+            li.className = 'ranking-item';
+            li.innerHTML = `<span>#${i+1} ${item.fullname || item.username}</span><span style="color:#FFD700; font-weight:bold;">${item.puntos} pts</span>`;
+            lista.appendChild(li);
+        });
+    } catch (error) {
+        console.error('Error al actualizar ranking:', error);
+        const lista = document.getElementById('rankingList');
+        if (lista) {
+            lista.innerHTML = '<li style="text-align:center;">❌ Error al cargar el ranking</li>';
+        }
+    }
+}
 
         async function recalcularRanking() { 
             await actualizarRanking(); 

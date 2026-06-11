@@ -372,13 +372,19 @@ app.post('/api/apuestas/multiple', verificarToken, async (req, res) => {
 });
 
 app.get('/api/ranking', async (req, res) => {
-    const result = await pool.query(`
-        SELECT u.id, u.username, u.fullname, COALESCE(r.puntos, 0) as puntos
-        FROM usuarios u
-        LEFT JOIN ranking r ON u.id = r.usuario_id
-        ORDER BY puntos DESC
-    `);
-    res.json(result.rows);
+    try {
+        const result = await pool.query(`
+            SELECT u.id, u.username, u.fullname, COALESCE(r.puntos, 0) as puntos
+            FROM usuarios u
+            LEFT JOIN ranking r ON u.id = r.usuario_id
+            WHERE u.role != 'admin'
+            ORDER BY puntos DESC
+        `);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error en ranking:', error);
+        res.status(500).json({ error: 'Error al obtener ranking' });
+    }
 });
 
 app.get('/api/usuarios', async (req, res) => {

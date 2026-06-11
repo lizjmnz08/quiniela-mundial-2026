@@ -899,6 +899,9 @@ async function actualizarRanking() {
         
         lista.innerHTML = '';
         ranking.forEach((item, i) => {
+            // 🆕 Saltar administradores
+            if (item.role === 'admin') return;
+            
             const li = document.createElement('li');
             li.className = 'ranking-item';
             li.innerHTML = `<span>#${i+1} ${item.fullname || item.username}</span><span style="color:#FFD700; font-weight:bold;">${item.puntos} pts</span>`;
@@ -906,10 +909,6 @@ async function actualizarRanking() {
         });
     } catch (error) {
         console.error('Error al actualizar ranking:', error);
-        const lista = document.getElementById('rankingList');
-        if (lista) {
-            lista.innerHTML = '<li style="text-align:center;">❌ Error al cargar el ranking</li>';
-        }
     }
 }
 

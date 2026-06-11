@@ -36,10 +36,20 @@
         }
         input:focus { outline: none; border-color: #FFD700; background: rgba(255, 255, 255, 0.15); }
         
-        /* Contenedor de botones en fila */
+        .forgot-link {
+            text-align: right;
+            margin: 5px 0 15px 0;
+        }
+        .forgot-link a {
+            color: #FFD700;
+            text-decoration: none;
+            font-size: 0.85em;
+        }
+        .forgot-link a:hover { text-decoration: underline; }
+        
         .button-group {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             margin-top: 10px;
         }
         .btn {
@@ -48,7 +58,7 @@
             border: none;
             border-radius: 10px;
             font-weight: bold;
-            font-size: 1em;
+            font-size: 0.95em;
             cursor: pointer;
             transition: all 0.3s;
             text-align: center;
@@ -106,22 +116,23 @@
             border: 2px solid rgba(255, 215, 0, 0.4);
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
             position: relative;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         .modal-content p { color: #FFFFFF !important; }
         .modal-content strong { color: #FFFFFF !important; }
         .modal-content div { color: #FFFFFF !important; }
         
         /* Scroll personalizado */
-        .modal-content div::-webkit-scrollbar { width: 4px; }
-        .modal-content div::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
-        .modal-content div::-webkit-scrollbar-thumb { background: #FFD700; border-radius: 10px; }
+        .modal-content .scroll-content::-webkit-scrollbar { width: 5px; }
+        .modal-content .scroll-content::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        .modal-content .scroll-content::-webkit-scrollbar-thumb { background: #FFD700; border-radius: 10px; }
         
         @media (max-width: 480px) {
             .login-container { padding: 25px; }
             .button-group { flex-direction: column; gap: 10px; }
             .btn { width: 100%; }
-            .modal-content { width: 95% !important; padding: 12px !important; }
+            .modal-content { width: 95% !important; padding: 15px !important; }
         }
     </style>
 </head>
@@ -142,11 +153,10 @@
                 <label>🔒 Contraseña</label>
                 <input type="password" id="password" placeholder="Ingresa tu contraseña" required>
             </div>
-                      <div style="text-align: right; margin: 10px 0;">
-    <a href="recuperar.html" style="color: #FFD700; text-decoration: none; font-size: 0.9em;">
-        ¿Olvidaste tu contraseña?
-    </a>
-</div>
+            
+            <div class="forgot-link">
+                <a href="recuperar.html">¿Olvidaste tu contraseña?</a>
+            </div>
             
             <div class="button-group">
                 <button type="submit" class="btn btn-login">🚪 Iniciar Sesión</button>
@@ -162,37 +172,52 @@
         </div>
     </div>
 
-    <!-- Modal Instructivo -->
+    <!-- Modal Instructivo CORREGIDO -->
     <div id="instructivoModal" class="modal">
-        <div class="modal-content" style="max-width: 450px; width: 90%; padding: 20px; max-height: 85vh;">
-            <span onclick="cerrarInstructivo()" style="float: right; font-size: 22px; cursor: pointer; color: #FFD700; position: absolute; right: 15px; top: 10px;">&times;</span>
-            <h2 style="color: #FFD700; margin-bottom: 10px; text-align: center; font-size: 1.3em;">📖 INSTRUCTIVO</h2>
+        <div class="modal-content" style="max-width: 500px; width: 90%; padding: 20px; max-height: 85vh;">
+            <span onclick="cerrarInstructivo()" style="float: right; font-size: 22px; cursor: pointer; color: #FFD700; position: absolute; right: 15px; top: 10px; z-index: 10;">&times;</span>
+            <h2 style="color: #FFD700; margin-bottom: 15px; text-align: center; font-size: 1.3em;">📖 INSTRUCTIVO</h2>
             
-            <div style="text-align: left; max-height: calc(85vh - 90px); overflow-y: auto; padding-right: 8px; font-size: 0.85em; color: #FFFFFF;">
-                <h3 style="color: #FFD700; margin-top: 8px; margin-bottom: 5px; font-size: 0.95em;">🎯 ¿CÓMO FUNCIONA?</h3>
-                <p style="margin-bottom: 3px;">1. <strong>Regístrate</strong> con nombre y email.</p>
-                <p style="margin-bottom: 3px;">2. <strong>Inicia sesión</strong> con usuario y contraseña.</p>
-                <p style="margin-bottom: 3px;">3. <strong>Predice</strong> los resultados de todos los partidos.</p>
-                <p style="margin-bottom: 3px;">4. <strong>Guarda</strong> tus predicciones.</p>
-                <p style="margin-bottom: 3px;">5. <strong>Compite</strong> en el ranking de puntos.</p>
+            <!-- CONTENIDO CON SCROLL -->
+            <div class="scroll-content" style="text-align: left; max-height: calc(85vh - 160px); overflow-y: auto; padding-right: 10px; font-size: 0.85em; color: #FFFFFF;">
                 
-                <h3 style="color: #FFD700; margin-top: 10px; margin-bottom: 5px; font-size: 0.95em;">⭐ PUNTUACIÓN</h3>
-                <p style="margin-bottom: 3px;">• <strong>Resultado exacto:</strong> 3pts (Grupos) / 6pts (Eliminatorias)</p>
-                <p style="margin-bottom: 3px;">• <strong>Acertar ganador/empate:</strong> 1pt (Grupos) / 2pts (Eliminatorias)</p>
+                <h3 style="color: #FFD700; margin-top: 5px; margin-bottom: 8px; font-size: 0.95em;">🎯 ¿CÓMO FUNCIONA?</h3>
+                <p style="margin-bottom: 4px;">1. <strong>Regístrate</strong> con nombre y email.</p>
+                <p style="margin-bottom: 4px;">2. <strong>Inicia sesión</strong> con usuario y contraseña.</p>
+                <p style="margin-bottom: 4px;">3. <strong>Predice</strong> los resultados de todos los partidos.</p>
+                <p style="margin-bottom: 4px;">4. <strong>Guarda</strong> tus predicciones.</p>
+                <p style="margin-bottom: 4px;">5. <strong>Compite</strong> en el ranking de puntos.</p>
                 
-                <h3 style="color: #FFD700; margin-top: 10px; margin-bottom: 5px; font-size: 0.95em;">📊 FASES DEL TORNEO</h3>
-                <p style="margin-bottom: 3px;">• <strong>Grupos:</strong> 72 partidos (11/06 al 27/06)</p>
-                <p style="margin-bottom: 3px;">• <strong>Octavos:</strong> 16 partidos (28/06 al 03/07)</p>
-                <p style="margin-bottom: 3px;">• <strong>Cuartos:</strong> 8 partidos (04/07 al 07/07)</p>
-                <p style="margin-bottom: 3px;">• <strong>Semifinales:</strong> 4 partidos (10/07 y 11/07)</p>
-                <p style="margin-bottom: 3px;">• <strong>Tercer puesto:</strong> 1 partido (17/07)</p>
-                <p style="margin-bottom: 3px;">• <strong>Gran Final:</strong> 1 partido (18/07)</p>
+                <h3 style="color: #FFD700; margin-top: 12px; margin-bottom: 8px; font-size: 0.95em;">⭐ PUNTUACIÓN</h3>
+                <p style="margin-bottom: 4px;">• <strong>Resultado exacto:</strong> 3pts (Grupos) / 6pts (Eliminatorias)</p>
+                <p style="margin-bottom: 4px;">• <strong>Acertar ganador/empate:</strong> 1pt (Grupos) / 2pts (Eliminatorias)</p>
                 
-                <p style="margin-top: 12px; text-align: center; color: #FFD700; font-weight: bold; font-size: 0.9em;">🏆 ¡BUENA SUERTE! 🏆</p>
+                <h3 style="color: #FFD700; margin-top: 12px; margin-bottom: 8px; font-size: 0.95em;">📊 FASES DEL TORNEO</h3>
+                <p style="margin-bottom: 4px;">• <strong>Grupos:</strong> 72 partidos (11/06 al 27/06)</p>
+                <p style="margin-bottom: 4px;">• <strong>Eliminatoria 32:</strong> 16 partidos (28/06 al 03/07)</p>
+                <p style="margin-bottom: 4px;">• <strong>Octavos:</strong> 8 partidos (04/07 al 07/07)</p>
+                <p style="margin-bottom: 4px;">• <strong>Cuartos:</strong> 4 partidos (09/07 al 11/07)</p>
+                <p style="margin-bottom: 4px;">• <strong>Semifinales:</strong> 2 partidos (14/07 y 15/07)</p>
+                <p style="margin-bottom: 4px;">• <strong>Tercer puesto:</strong> 1 partido (18/07)</p>
+                <p style="margin-bottom: 4px;">• <strong>Gran Final:</strong> 1 partido (19/07)</p>
+                
+                <h3 style="color: #FFD700; margin-top: 12px; margin-bottom: 8px; font-size: 0.95em;">💰 PREMIOS</h3>
+                <p style="margin-bottom: 4px;">• <strong>🥇 1er Lugar:</strong> 60% del pozo total</p>
+                <p style="margin-bottom: 4px;">• <strong>🥈 2do Lugar:</strong> 15% del pozo total</p>
+                <p style="margin-bottom: 4px;">• <strong>🥉 3er Lugar:</strong> 10% del pozo total</p>
+                <p style="margin-bottom: 4px; color: #FFD700; font-size: 0.8em;">💡 El 15% restante se destina a la organización</p>
+                
+                <h3 style="color: #FFD700; margin-top: 12px; margin-bottom: 8px; font-size: 0.95em;">🔒 REGLAS IMPORTANTES</h3>
+                <p style="margin-bottom: 4px;">• <strong>No podrás cambiar</strong> tu apuesta después de que inicie el partido.</p>
+                <p style="margin-bottom: 4px;">• <strong>Resultados oficiales</strong> son cargados por el administrador.</p>
+                <p style="margin-bottom: 4px;">• <strong>Puntos se calculan</strong> automáticamente.</p>
+                
+                <p style="margin-top: 15px; text-align: center; color: #FFD700; font-weight: bold; font-size: 0.9em;">🏆 ¡BUENA SUERTE! 🏆</p>
             </div>
             
-            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px; padding-bottom: 5px;">
-                <button onclick="cerrarInstructivo()" style="background: linear-gradient(45deg, #FFD700, #FFA500); color: #0a1f2e; border: none; padding: 10px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.9em;">✅ Entendido</button>
+            <!-- BOTÓN SIEMPRE VISIBLE -->
+            <div style="padding-top: 12px; border-top: 1px solid rgba(255,215,0,0.2); margin-top: 10px;">
+                <button onclick="cerrarInstructivo()" style="background: linear-gradient(45deg, #FFD700, #FFA500); color: #0a1f2e; border: none; padding: 10px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.9em; width: 100%; transition: all 0.3s;">✅ Entendido</button>
             </div>
         </div>
     </div>
@@ -207,6 +232,20 @@
         function cerrarInstructivo() {
             document.getElementById('instructivoModal').style.display = 'none';
         }
+
+        // Cerrar modal con Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                cerrarInstructivo();
+            }
+        });
+
+        // Cerrar modal clickeando fuera
+        document.getElementById('instructivoModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                cerrarInstructivo();
+            }
+        });
 
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();

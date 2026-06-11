@@ -190,6 +190,18 @@
             <button class="btn btn-secondary" onclick="limpiarResultados()">🗑️ Limpiar Resultados</button>
             <div id="message" class="message"></div>
         </div>
+        <!-- 🆕 VER APUESTAS DE JUGADORES -->
+<div style="background: rgba(33, 150, 243, 0.05); padding: 20px; border-radius: 15px; margin-top: 25px; border: 1px solid rgba(33, 150, 243, 0.2);">
+    <h3 style="color: #2196F3; margin-bottom: 15px;">👀 Ver Apuestas de Jugadores</h3>
+    
+    <select id="selectUsuario" onchange="verApuestasUsuario()" style="width: 100%; padding: 12px; background: #1a3a4a; border: 2px solid rgba(255,215,0,0.3); border-radius: 10px; color: white; margin-bottom: 15px; font-size: 0.9em; cursor: pointer;">
+        <option value="" style="color: #a0c4d8; background: #1a3a4a;">Seleccionar jugador...</option>
+    </select>
+    
+    <div id="tablaApuestasJugador" style="max-height: 400px; overflow-y: auto;">
+        <p style="color: #a0c4d8; text-align: center; padding: 20px;">👆 Selecciona un jugador para ver sus apuestas</p>
+    </div>
+</div>
     </div>
 
     <script>
@@ -519,6 +531,122 @@ async function limpiarApuestasUsuario(usuarioId, username) {
                 await loadUsers();
             }
         });
+
+        // ==========================================
+// 👀 VER APUESTAS DE JUGADORES
+// ==========================================
+
+// Cargar lista de usuarios en el selector
+async function cargarUsuariosEnSelector() {
+    try {
+        const response = await fetch(API_URL + '/usuarios');
+        const usuarios = await response.json();
+        const select = document.getElementById('selectUsuario');
+        
+        if (!select) return;
+        
+        select.innerHTML = '<option value="" style="color: #a0c4d8; background: #1a3a4a;">Seleccionar jugador...</option>';
+        
+        usuarios.forEach(u => {
+            // No mostrar admin
+            if (u.role !== 'admin') {
+                const option = document.createElement('option');
+                option.value = u.id;
+                option.textContent = u.username + ' (' + u.fullname + ')';
+                option.style.color = 'white';
+                option.style.background = '#1a3a4a';
+                select.appendChild(option);
+            }
+        });
+    } catch(e) {
+        console.error('Error cargando usuarios:', e);
+    }
+}
+
+// Ver apuestas del usuario seleccionado
+async function verApuestasUsuario() {
+    const usuarioId = document.getElementById('selectUsuario').value;
+    const div = document.getElementById('tablaApuestasJugador');
+    const token = localStorage.getItem('token');
+    
+    if (!usuarioId) {
+        div.innerHTML = '<p style="color: #a0c4d8; text-align: center; padding: 20px;">👆 Selecciona un jugador para ver sus apuestas</p>';
+        return;
+    }
+    
+    div.innerHTML = '<p style="color: #FFD700; text-align: center;">⏳ Cargando apuestas...</p>';
+    
+    try {
+        // Obtener apuestas del usuario
+        const apuestasRes = await fetch(API_URL + '/apuestas/usuario/' + usuarioId, {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const apuestas = await apuestasRes.json();
+        
+        // Obtener partidos para nombres
+        const partidosRes = await fetch(API_URL + '/partidos');
+        const partidos = await partidosRes.json();
+        
+        // Obtener resultados
+        const resultadosRes = await fetch(API_URL + '/resultados');
+        const resultados = await resultadosRes.json();
+        
+        if (!apuestas || apuestas.length === 0) {
+            div.innerHTML = '<p style="color: #a0c4d8; text-align: center; padding: 20px;">📭 Este jugador no ha hecho apuestas aún</p>';
+            return;
+        }
+        
+        let html = '<table style="width:100%; font-size:0.85em; border-collapse:collapse;">';
+        html += '<tr style="border-bottom:2px solid rgba(255,215,0,0.3);">';
+        html += '<th style="padding:8px; text-align:left; color:#FFD700;">Partido</th>';
+        html += '<th style="padding:8px; text-align:center; color:#FFD700;">Apuesta</th>';
+        html += '<th style="padding:8px; text-align:center; color:#FFD700;">Resultado</th>';
+        html += '<th style="padding:8px; text-align:center; color:#FFD700;">Pts</th>';
+        html += '</tr>';
+        
+        apuestas.forEach(a => {
+            const p = partidos.find(p => p.id === a.partido_id);
+            const r = resultados.find(r => r.partido_id === a.partido_id);
+            const nombre = p ? `${p.local.split(' ').slice(1).join(' ')} vs ${p.visitante.split(' ').slice(1).join(' ')}` : 'Partido #' + a.partido_id;
+            const fecha = p ? `${p.fecha} ${p.hora}` : '';
+            
+            // Calcular puntos
+            let puntos = '';
+            if (r) {
+                if (a.goles_local === r.goles_local && a.goles_visitante === r.goles_visitante) {
+                    puntos = '⭐3';
+                } else if (
+                    (a.goles_local > a.goles_visitante && r.goles_local > r.goles_visitante) ||
+                    (a.goles_local < a.goles_visitante && r.goles_local < r.goles_visitante) ||
+                    (a.goles_local === a.goles_visitante && r.goles_local === r.goles_visitante)
+                ) {
+                    puntos = '✓1';
+                } else {
+                    puntos = '✗0';
+                }
+            }
+            
+            html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.1);">';
+            html += `<td style="padding:8px; font-size:0.8em;">${nombre}<br><span style="color:#a0c4d8; font-size:0.7em;">${fecha}</span></td>`;
+            html += `<td style="padding:8px; text-align:center; color:#FFD700; font-weight:bold;">${a.goles_local} - ${a.goles_visitante}</td>`;
+            html += `<td style="padding:8px; text-align:center;">${r ? r.goles_local + ' - ' + r.goles_visitante : '⏳'}</td>`;
+            html += `<td style="padding:8px; text-align:center;">${puntos}</td>`;
+            html += '</tr>';
+        });
+        
+        html += '</table>';
+        div.innerHTML = html;
+        
+    } catch(e) {
+        console.error('Error:', e);
+        div.innerHTML = '<p style="color:#ff6666; text-align:center;">❌ Error al cargar apuestas</p>';
+    }
+}
+
+// Inicializar al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    cargarUsuariosEnSelector();
+});
     </script>
 </body>
 </html>

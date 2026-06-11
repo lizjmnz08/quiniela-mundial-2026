@@ -660,6 +660,23 @@ async function recalcularPuntos() {
         console.error('Error al recalcular puntos:', error);
     }
 }
+// Ver apuestas de un usuario específico (solo admin)
+app.get('/api/apuestas/usuario/:id', verificarToken, async (req, res) => {
+    try {
+        if (req.usuario.role !== 'admin') {
+            return res.status(403).json({ error: 'Solo admin' });
+        }
+        
+        const result = await pool.query(
+            'SELECT * FROM apuestas WHERE usuario_id = $1 ORDER BY partido_id',
+            [req.params.id]
+        );
+        
+        res.json(result.rows);
+    } catch(e) {
+        res.status(500).json({ error: e.message });
+    }
+});
 
 // ========== INICIAR SERVIDOR ==========
 async function startServer() {

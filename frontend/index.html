@@ -762,25 +762,51 @@
 }
 
 
-        window.actualizarApuesta = async function(partidoId, tipo, valor) {
-            let val = parseInt(valor) || 0;
-            if (val < 0) val = 0;
-            if (val > 20) val = 20;
-            
-            const apuestasExistentes = [...apuestasUsuario];
-            const index = apuestasExistentes.findIndex(a => a.partido_id === partidoId);
-            if (index >= 0) {
-                if (tipo === 'local') apuestasExistentes[index].goles_local = val;
-                else apuestasExistentes[index].goles_visitante = val;
-            } else {
-                apuestasExistentes.push({ partido_id: partidoId, goles_local: tipo === 'local' ? val : 0, goles_visitante: tipo === 'visitante' ? val : 0 });
-            }
-            
-            const apuestasParaGuardar = apuestasExistentes.map(a => ({ partidoId: a.partido_id, golesLocal: a.goles_local, golesVisitante: a.goles_visitante }));
-            await fetchAPI('/apuestas/multiple', { method: 'POST', body: JSON.stringify({ apuestas: apuestasParaGuardar }) });
-            apuestasUsuario = await fetchAPI('/apuestas');
-            actualizarProgreso();
-        };
+     window.actualizarApuesta = async function(partidoId, tipo, valor) {
+    let val = parseInt(valor) || 0;
+    if (val < 0) val = 0;
+    if (val > 20) val = 20;
+    
+    const apuestasExistentes = [...apuestasUsuario];
+    const index = apuestasExistentes.findIndex(a => a.partido_id === partidoId);
+    
+    if (index >= 0) {
+        if (tipo === 'local') apuestasExistentes[index].goles_local = val;
+        else apuestasExistentes[index].goles_visitante = val;
+    } else {
+        apuestasExistentes.push({ 
+            partido_id: partidoId, 
+            goles_local: tipo === 'local' ? val : 0, 
+            goles_visitante: tipo === 'visitante' ? val : 0 
+        });
+    }
+    
+    // Actualizar variable global INMEDIATAMENTE
+    apuestasUsuario = apuestasExistentes;
+    
+    // Guardar en servidor
+    const apuestasParaGuardar = apuestasExistentes
+        .filter(a => a.goles_local !== null && a.goles_visitante !== null)
+        .map(a => ({ 
+            partidoId: a.partido_id, 
+            golesLocal: a.goles_local, 
+            golesVisitante: a.goles_visitante 
+        }));
+    
+    if (apuestasParaGuardar.length > 0) {
+        try {
+            await fetchAPI('/apuestas/multiple', { 
+                method: 'POST', 
+                body: JSON.stringify({ apuestas: apuestasParaGuardar }) 
+            });
+        } catch (error) {
+            console.error('Error al guardar:', error);
+        }
+    }
+    
+    // 🆕 ACTUALIZAR PROGRESO INMEDIATAMENTE
+    actualizarProgreso();
+};
 
         async function guardarTodasLasApuestas() {
             const apuestasParaGuardar = [];
@@ -855,13 +881,44 @@
             await renderizarPartidos();
         }
 
-        function actualizarProgreso() {
-            const total = partidosGlobales.length;
-            const completados = apuestasUsuario.filter(a => a.goles_local !== undefined && a.goles_visitante !== undefined).length;
-            const pct = (completados / total) * 100;
-            document.getElementById('progressBar').style.width = pct + '%';
-            document.getElementById('progressText').textContent = `${completados}/${total} partidos`;
-        }
+       function actualizarProgreso() {
+    const total = partidosGlobales.length;
+    
+    // Contar apuestas que tienen ambos goles ingresados (no vacíos, no null, no undefined)
+    let completados = 0;
+    
+    if (apuestasUsuario && apuestasUsuario.length > 0) {
+        completados = apuestasUsuario.filter(a => {
+            const localValido = a.goles_local !== undefined && 
+                               a.goles_local !== null && 
+                               a.goles_local !== '';
+            const visitanteValido = a.goles_visitante !== undefined && 
+                                   a.goles_visitante !== null && 
+                                   a.goles_visitante !== '';
+            return localValido && visitanteValido;
+        }).length;
+    }
+    
+    // También contar desde los inputs del DOM como respaldo
+    if (completados === 0) {
+        const inputsLocal = document.querySelectorAll('input[id^="local_"]');
+        inputsLocal.forEach(input => {
+            const id = input.id.replace('local_', '');
+            const visitInput = document.getElementById('visit_' + id);
+            if (input.value !== '' && visitInput && visitInput.value !== '' && !input.disabled) {
+                completados++;
+            }
+        });
+    }
+    
+    const pct = total > 0 ? (completados / total) * 100 : 0;
+    
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `${completados}/${total} partidos`;
+    
+    console.log(`📊 Progreso: ${completados}/${total} apuestas (${pct.toFixed(1)}%)`);
+}
+
         // Función para cerrar el modal de ranking
     function cerrarModal() {
     document.getElementById('rankingModal').classList.remove('active');

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔑 Recuperar Contraseña - Quiniela Mundial 2026</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1f2e 0%, #1a3a4a 50%, #0d2b3a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            padding: 20px;
+        }
+        .recuperar-container {
+            background: rgba(255,255,255,0.08);
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            border: 2px solid rgba(255,215,0,0.3);
+            text-align: center;
+        }
+        h2 { color: #FFD700; margin-bottom: 20px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1em;
+        }
+        input:focus { outline: none; border-color: #FFD700; }
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+            font-size: 1em;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #0a1f2e;
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.12);
+            color: white;
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .error { color: #ff4444; display: none; margin-top: 10px; }
+        .success { color: #00ff88; display: none; margin-top: 10px; }
+        .step { display: none; }
+        .step.active { display: block; }
+        a { color: #FFD700; text-decoration: none; }
+        .back-link { margin-top: 20px; display: block; }
+    </style>
+</head>
+<body>
+    <div class="recuperar-container">
+        <h2>🔑 Recuperar Contraseña</h2>
+        
+        <!-- Paso 1: Email -->
+        <div class="step active" id="step1">
+            <p style="color: #a0c4d8; margin-bottom: 15px;">Ingresa tu email registrado para recuperar tu contraseña</p>
+            <input type="email" id="email" placeholder="📧 tu@email.com">
+            <button class="btn btn-primary" onclick="solicitarRecuperacion()">✅ Enviar Código</button>
+            <p class="error" id="errorEmail">❌ Email no encontrado</p>
+        </div>
+        
+        <!-- Paso 2: Código -->
+        <div class="step" id="step2">
+            <p style="color: #a0c4d8; margin-bottom: 15px;">Ingresa el código de verificación enviado a tu email</p>
+            <input type="text" id="codigo" placeholder="🔢 Código de 6 dígitos" maxlength="6">
+            <button class="btn btn-primary" onclick="verificarCodigo()">✅ Verificar Código</button>
+            <p class="error" id="errorCodigo">❌ Código incorrecto</p>
+        </div>
+        
+        <!-- Paso 3: Nueva contraseña -->
+        <div class="step" id="step3">
+            <p style="color: #00ff88; margin-bottom: 15px;">✅ Código verificado. Ingresa tu nueva contraseña</p>
+            <input type="password" id="newPassword" placeholder="🔐 Nueva contraseña">
+            <input type="password" id="confirmPassword" placeholder="🔐 Confirmar contraseña">
+            <button class="btn btn-primary" onclick="cambiarPassword()">💾 Guardar Contraseña</button>
+            <p class="error" id="errorPassword">❌ Las contraseñas no coinciden</p>
+        </div>
+        
+        <!-- Paso 4: Éxito -->
+        <div class="step" id="step4">
+            <p style="font-size: 3em;">✅</p>
+            <p style="color: #00ff88; font-size: 1.2em; margin: 15px 0;">¡Contraseña actualizada exitosamente!</p>
+            <a href="login.html" class="btn btn-primary" style="display: inline-block; text-align: center;">🔐 Ir al Login</a>
+        </div>
+        
+        <a href="login.html" class="back-link">← Volver al inicio de sesión</a>
+    </div>
+
+    <script>
+        const API_URL = 'https://quiniela-mundial-2026-production-bde0.up.railway.app/api';
+        let emailRecuperacion = '';
+
+        function mostrarPaso(paso) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + paso).classList.add('active');
+        }
+
+        async function solicitarRecuperacion() {
+            const email = document.getElementById('email').value.trim();
+            if (!email) { alert('Ingresa tu email'); return; }
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/recuperar-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    emailRecuperacion = email;
+                    document.getElementById('errorEmail').style.display = 'none';
+                    mostrarPaso(2);
+                } else {
+                    document.getElementById('errorEmail').style.display = 'block';
+                    document.getElementById('errorEmail').textContent = '❌ ' + (data.error || 'Email no encontrado');
+                }
+            } catch (error) {
+                document.getElementById('errorEmail').style.display = 'block';
+                document.getElementById('errorEmail').textContent = '❌ Error de conexión';
+            }
+        }
+
+        async function verificarCodigo() {
+            const codigo = document.getElementById('codigo').value.trim();
+            if (!codigo) { alert('Ingresa el código'); return; }
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/verificar-codigo`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailRecuperacion, codigo })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('errorCodigo').style.display = 'none';
+                    mostrarPaso(3);
+                } else {
+                    document.getElementById('errorCodigo').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('errorCodigo').style.display = 'block';
+            }
+        }
+
+        async function cambiarPassword() {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!newPassword || newPassword.length < 4) {
+                alert('La contraseña debe tener al menos 4 caracteres');
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                document.getElementById('errorPassword').style.display = 'block';
+                return;
+            }
+            
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/cambiar-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailRecuperacion, newPassword })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('errorPassword').style.display = 'none';
+                    mostrarPaso(4);
+                }
+            } catch (error) {
+                alert('❌ Error al cambiar la contraseña');
+            }
+        }
+    </script>
+</body>
+</html>

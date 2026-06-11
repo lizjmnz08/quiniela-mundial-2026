@@ -413,6 +413,13 @@
             flex-direction: column;
             gap: 20px;
         }
+        /* Inputs bloqueados por partido en juego */
+    .score-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: rgba(255, 100, 100, 0.1);
+    border-color: rgba(255, 100, 100, 0.3);
+}
         .spinner {
             width: 50px;
             height: 50px;
@@ -569,6 +576,7 @@
         let partidosGlobales = [];
         let apuestasUsuario = [];
         let resultadosGlobales = [];
+        
 
         async function checkAuth() {
             if (!token) { window.location.href = 'login.html'; return false; }
@@ -587,6 +595,23 @@
             if (response.status === 401) { localStorage.clear(); window.location.href = 'login.html'; throw new Error('No autorizado'); }
             return response.json();
         }
+        // ========== VERIFICAR SI UN PARTIDO YA COMENZÓ ==========
+    function partidoYaInicio(partido) {
+    if (!partido.fecha || !partido.hora) return false;
+    
+    // Construir fecha completa: "DD/MM/AAAA HH:MM"
+    const fechaHoraStr = partido.fecha + ' ' + partido.hora;
+    
+    // Convertir a objeto Date
+    const [dia, mes, anio] = partido.fecha.split('/');
+    const [hora, minuto] = partido.hora.split(':');
+    const fechaPartido = new Date(anio, mes - 1, dia, hora || 0, minuto || 0);
+    
+    // Comparar con la fecha actual
+    const ahora = new Date();
+    
+    return ahora >= fechaPartido;
+}
 
         function obtenerCodigoPais(textoEquipo) {
             const mapa = {
@@ -682,46 +707,60 @@
             actualizarProgreso();
         }
 
-        function crearTarjetaPartido(partido) {
-            const card = document.createElement('div');
-            card.className = 'match-card';
-            const resultado = resultadosGlobales.find(r => r.partido_id === partido.id);
-            const completado = !!resultado;
-            const apuesta = apuestasUsuario.find(a => a.partido_id === partido.id);
-            
-            const codLocal = obtenerCodigoPais(partido.local);
-            const codVisit = obtenerCodigoPais(partido.visitante);
-            const localClean = obtenerNombreLimpio(partido.local);
-            const visitClean = obtenerNombreLimpio(partido.visitante);
-            
-            card.innerHTML = `
-                <div class="match-header">
-                    <span class="phase-badge">${partido.fase === 'grupos' ? `Grupo ${partido.grupo}` : (partido.nombre || partido.fase)}</span>
-                    <span>📅 ${partido.fecha || 'Por definir'} ${partido.hora ? `🕐 ${partido.hora}` : ''}</span>
+     function crearTarjetaPartido(partido) {
+    const card = document.createElement('div');
+    card.className = 'match-card';
+    
+    const resultado = resultadosGlobales.find(r => r.partido_id === partido.id);
+    const completado = !!resultado;
+    const apuesta = apuestasUsuario.find(a => a.partido_id === partido.id);
+    
+    // 🆕 Verificar si el partido ya comenzó
+    const yaInicio = partidoYaInicio(partido);
+    const bloqueado = completado || yaInicio;
+    
+    const codLocal = obtenerCodigoPais(partido.local);
+    const codVisit = obtenerCodigoPais(partido.visitante);
+    const localClean = obtenerNombreLimpio(partido.local);
+    const visitClean = obtenerNombreLimpio(partido.visitante);
+    
+    card.innerHTML = `
+        <div class="match-header">
+            <span class="phase-badge">${partido.fase === 'grupos' ? `Grupo ${partido.grupo}` : (partido.nombre || partido.fase)}</span>
+            <span>📅 ${partido.fecha || 'Por definir'} ${partido.hora ? `🕐 ${partido.hora}` : ''}</span>
+        </div>
+        <div class="match-teams">
+            <div class="team">
+                <div class="team-flag-container">
+                    ${codLocal !== 'xx' ? `<img class="team-flag-img" src="https://flagcdn.com/w80/${codLocal}.png" alt="${localClean}" onerror="this.style.display='none'">` : `<div style="font-size: 2em;">🏆</div>`}
+                    <span class="team-name">${localClean}</span>
                 </div>
-                <div class="match-teams">
-                    <div class="team">
-                        <div class="team-flag-container">
-                            ${codLocal !== 'xx' ? `<img class="team-flag-img" src="https://flagcdn.com/w80/${codLocal}.png" alt="${localClean}" onerror="this.style.display='none'">` : `<div style="font-size: 2em;">🏆</div>`}
-                            <span class="team-name">${localClean}</span>
-                        </div>
-                    </div>
-                    <div class="match-score">
-                        <input type="number" class="score-input" id="local_${partido.id}" min="0" max="20" value="${apuesta ? apuesta.goles_local : ''}" placeholder="0" ${completado ? 'disabled' : ''} onchange="actualizarApuesta(${partido.id}, 'local', this.value)">
-                        <span class="vs-text">VS</span>
-                        <input type="number" class="score-input" id="visit_${partido.id}" min="0" max="20" value="${apuesta ? apuesta.goles_visitante : ''}" placeholder="0" ${completado ? 'disabled' : ''} onchange="actualizarApuesta(${partido.id}, 'visitante', this.value)">
-                    </div>
-                    <div class="team">
-                        <div class="team-flag-container">
-                            ${codVisit !== 'xx' ? `<img class="team-flag-img" src="https://flagcdn.com/w80/${codVisit}.png" alt="${visitClean}" onerror="this.style.display='none'">` : `<div style="font-size: 2em;">🏆</div>`}
-                            <span class="team-name">${visitClean}</span>
-                        </div>
-                    </div>
+            </div>
+            <div class="match-score">
+                <input type="number" class="score-input" id="local_${partido.id}" min="0" max="20" value="${apuesta ? apuesta.goles_local : ''}" placeholder="0" ${bloqueado ? 'disabled' : ''} onchange="actualizarApuesta(${partido.id}, 'local', this.value)">
+                <span class="vs-text">VS</span>
+                <input type="number" class="score-input" id="visit_${partido.id}" min="0" max="20" value="${apuesta ? apuesta.goles_visitante : ''}" placeholder="0" ${bloqueado ? 'disabled' : ''} onchange="actualizarApuesta(${partido.id}, 'visitante', this.value)">
+            </div>
+            <div class="team">
+                <div class="team-flag-container">
+                    ${codVisit !== 'xx' ? `<img class="team-flag-img" src="https://flagcdn.com/w80/${codVisit}.png" alt="${visitClean}" onerror="this.style.display='none'">` : `<div style="font-size: 2em;">🏆</div>`}
+                    <span class="team-name">${visitClean}</span>
                 </div>
-                ${completado ? `<div style="margin-top:12px; text-align:center; background:rgba(0,255,136,0.15); padding:5px; border-radius:8px;">📊 Resultado: ${resultado.goles_local} - ${resultado.goles_visitante}</div>` : ''}
-            `;
-            return card;
+            </div>
+        </div>
+        ${completado ? 
+            `<div style="margin-top:12px; text-align:center; background:rgba(0,255,136,0.15); padding:5px; border-radius:8px;">
+                📊 Resultado: ${resultado.goles_local} - ${resultado.goles_visitante}
+            </div>` : 
+            yaInicio ? 
+            `<div style="margin-top:12px; text-align:center; background:rgba(255,100,100,0.2); padding:5px; border-radius:8px; color:#ff6666;">
+                🔒 Partido en juego - Apuestas bloqueadas
+            </div>` : ''
         }
+    `;
+    return card;
+}
+
 
         window.actualizarApuesta = async function(partidoId, tipo, valor) {
             let val = parseInt(valor) || 0;

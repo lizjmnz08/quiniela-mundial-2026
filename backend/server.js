@@ -505,32 +505,7 @@ app.post('/api/auth/cambiar-password', async (req, res) => {
                 error: 'La contraseña debe tener al menos 4 caracteres' 
             });
         }
-        // ========== GUARDAR RESULTADO OFICIAL ==========
-app.post('/api/resultados', verificarToken, async (req, res) => {
-    try {
-        // Verificar que sea admin
-        if (req.usuario.role !== 'admin') {
-            return res.status(403).json({ success: false, error: 'Solo administradores' });
-        }
         
-        const { partidoId, golesLocal, golesVisitante } = req.body;
-        
-        console.log('📊 Guardando resultado:', { partidoId, golesLocal, golesVisitante });
-        
-        await pool.query(
-            `INSERT INTO resultados (partido_id, goles_local, goles_visitante) 
-             VALUES ($1, $2, $3)
-             ON CONFLICT (partido_id) 
-             DO UPDATE SET goles_local = $2, goles_visitante = $3, actualizado = NOW()`,
-            [partidoId, golesLocal, golesVisitante]
-        );
-        
-        res.json({ success: true, message: 'Resultado guardado' });
-    } catch (error) {
-        console.error('Error al guardar resultado:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
         
         // Encriptar contraseña (usando bcryptjs que ya tienes)
         const bcrypt = require('bcryptjs');
@@ -559,6 +534,132 @@ app.post('/api/resultados', verificarToken, async (req, res) => {
     }
 });
 
+// ==========================================
+// 📊 CARGAR RESULTADOS OFICIALES (SOLO ADMIN)
+// ==========================================
+app.post('/api/resultados', verificarToken, async (req, res) => {
+    try {
+        // Verificar que sea admin
+        if (req.usuario.role !== 'admin') {
+            return res.status(403).json({ 
+                success: false, 
+                error: 'Solo el administrador puede cargar resultados' 
+            });
+        }
+        
+        const { partidoId, golesLocal, golesVisitante } = req.body;
+        
+        console.log('📊 Guardando resultado:', { partidoId, golesLocal, golesVisitante });
+        
+        // Guardar o actualizar resultado
+        await pool.query(
+            `INSERT INTO resultados (partido_id, goles_local, goles_visitante) 
+             VALUES ($1, $2, $3)
+             ON CONFLICT (partido_id) 
+             DO UPDATE SET goles_local = $2, goles_visitante = $3, actualizado = NOW()`,
+            [partidoId, golesLocal, golesVisitante]
+        );
+        
+        // Recalcular puntos de todos los usuarios
+        await recalcularPuntos();
+        
+        res.json({ 
+            success: true, 
+            message: 'Resultado guardado y puntos actualizados' 
+        });
+        
+    } catch (error) {
+        console.error('Error al guardar resultado:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+});
+
+// ==========================================
+// 🗑️ ELIMINAR RESULTADO
+// ==========================================
+app.delete('/api/resultados/:partidoId', verificarToken, async (req, res) => {
+    try {
+        if (req.usuario.role !== 'admin') {
+            return res.status(403).json({ error: 'Solo admin' });
+        }
+        
+        await pool.query('DELETE FROM resultados WHERE partido_id = $1', [req.params.partidoId]);
+        await recalcularPuntos();
+        
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ==========================================
+// 🔄 RECALCULAR PUNTOS DE TODOS LOS USUARIOS
+// ==========================================
+async function recalcularPuntos() {
+    try {
+        // Obtener todos los usuarios
+        const usuarios = await pool.query('SELECT id FROM usuarios');
+        
+        for (const user of usuarios.rows) {
+            let puntos = 0;
+            
+            // Obtener apuestas del usuario
+            const apuestas = await pool.query(
+                'SELECT * FROM apuestas WHERE usuario_id = $1',
+                [user.id]
+            );
+            
+            for (const apuesta of apuestas.rows) {
+                // Buscar resultado oficial
+                const resultado = await pool.query(
+                    'SELECT * FROM resultados WHERE partido_id = $1',
+                    [apuesta.partido_id]
+                );
+                
+                if (resultado.rows.length === 0) continue;
+                
+                const r = resultado.rows[0];
+                
+                // Verificar si es eliminatoria (puntúa doble)
+                const partido = await pool.query(
+                    'SELECT fase FROM partidos WHERE id = $1',
+                    [apuesta.partido_id]
+                );
+                
+                const esEliminatoria = partido.rows[0]?.fase !== 'grupos';
+                const multiplicador = esEliminatoria ? 2 : 1;
+                
+                // Resultado exacto: 3 puntos (grupos) o 6 puntos (eliminatorias)
+                if (apuesta.goles_local === r.goles_local && 
+                    apuesta.goles_visitante === r.goles_visitante) {
+                    puntos += 3 * multiplicador;
+                }
+                // Acertar ganador/empate: 1 punto (grupos) o 2 puntos (eliminatorias)
+                else if (
+                    (apuesta.goles_local > apuesta.goles_visitante && r.goles_local > r.goles_visitante) ||
+                    (apuesta.goles_local < apuesta.goles_visitante && r.goles_local < r.goles_visitante) ||
+                    (apuesta.goles_local === apuesta.goles_visitante && r.goles_local === r.goles_visitante)
+                ) {
+                    puntos += 1 * multiplicador;
+                }
+            }
+            
+            // Guardar puntos en ranking
+            await pool.query(
+                `INSERT INTO ranking (usuario_id, puntos) VALUES ($1, $2)
+                 ON CONFLICT (usuario_id) DO UPDATE SET puntos = $2, ultima_actualizacion = NOW()`,
+                [user.id, puntos]
+            );
+        }
+        
+        console.log('✅ Puntos recalculados para todos los usuarios');
+    } catch (error) {
+        console.error('Error al recalcular puntos:', error);
+    }
+}
 
 // ========== INICIAR SERVIDOR ==========
 async function startServer() {

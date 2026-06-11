@@ -485,7 +485,7 @@
             <div class="progress-bar">
                 <div class="progress-fill" id="progressBar"></div>
             </div>
-            <span id="progressText">0/104 partidos</span>
+            
             <div class="action-buttons">
                 <button class="btn btn-primary" onclick="guardarTodasLasApuestas()">💾 Guardar Predicciones</button>
                 <button class="btn btn-secondary" onclick="verRanking()">🏆 Ver Ranking</button>
@@ -763,50 +763,46 @@
 }
 
 
-     window.actualizarApuesta = async function(partidoId, tipo, valor) {
+  window.actualizarApuesta = async function(partidoId, tipo, valor) {
     let val = parseInt(valor) || 0;
     if (val < 0) val = 0;
     if (val > 20) val = 20;
     
-    const apuestasExistentes = [...apuestasUsuario];
-    const index = apuestasExistentes.findIndex(a => a.partido_id === partidoId);
-    
-    if (index >= 0) {
-        if (tipo === 'local') apuestasExistentes[index].goles_local = val;
-        else apuestasExistentes[index].goles_visitante = val;
+    // Actualizar el input visualmente
+    if (tipo === 'local') {
+        document.getElementById('local_' + partidoId).value = val;
     } else {
-        apuestasExistentes.push({ 
-            partido_id: partidoId, 
-            goles_local: tipo === 'local' ? val : 0, 
-            goles_visitante: tipo === 'visitante' ? val : 0 
+        document.getElementById('visit_' + partidoId).value = val;
+    }
+    
+    // Guardar en el servidor
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    
+    try {
+        const response = await fetch('https://quiniela-mundial-2026-production-bde0.up.railway.app/api/apuestas/multiple', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({
+                apuestas: [{
+                    partidoId: partidoId,
+                    golesLocal: tipo === 'local' ? val : 0,
+                    golesVisitante: tipo === 'visitante' ? val : 0
+                }]
+            })
         });
+        
+        const data = await response.json();
+        console.log('✅ Guardado:', data);
+        
+        // Actualizar contador
+        actualizarProgreso();
+    } catch(e) {
+        console.error('Error al guardar:', e);
     }
-    
-    // Actualizar variable global INMEDIATAMENTE
-    apuestasUsuario = apuestasExistentes;
-    
-    // Guardar en servidor
-    const apuestasParaGuardar = apuestasExistentes
-        .filter(a => a.goles_local !== null && a.goles_visitante !== null)
-        .map(a => ({ 
-            partidoId: a.partido_id, 
-            golesLocal: a.goles_local, 
-            golesVisitante: a.goles_visitante 
-        }));
-    
-    if (apuestasParaGuardar.length > 0) {
-        try {
-            await fetchAPI('/apuestas/multiple', { 
-                method: 'POST', 
-                body: JSON.stringify({ apuestas: apuestasParaGuardar }) 
-            });
-        } catch (error) {
-            console.error('Error al guardar:', error);
-        }
-    }
-    
-    // 🆕 ACTUALIZAR PROGRESO INMEDIATAMENTE
-    actualizarProgreso();
 };
 
         async function guardarTodasLasApuestas() {
@@ -884,24 +880,20 @@
 
  function actualizarProgreso() {
     let completados = 0;
-    const total = 104; // Total de partidos fijo
+    const total = 104;
     
-    // Contar inputs con valores directamente del DOM
-    const todosInputsLocal = document.querySelectorAll('input[id^="local_"]');
-    
-    todosInputsLocal.forEach(input => {
+    // Contar inputs con valores
+    document.querySelectorAll('input[id^="local_"]').forEach(function(input) {
         const id = input.id.replace('local_', '');
         const visitInput = document.getElementById('visit_' + id);
         
-        if (input.value !== '' && input.value !== null && 
-            visitInput && visitInput.value !== '' && visitInput.value !== null &&
-            !input.disabled) {
+        if (input.value !== '' && visitInput && visitInput.value !== '' && !input.disabled) {
             completados++;
         }
     });
     
-    // Actualizar barra y texto
     const pct = total > 0 ? (completados / total) * 100 : 0;
+    
     document.getElementById('progressBar').style.width = pct + '%';
     document.getElementById('progressText').textContent = completados + '/' + total + ' partidos';
 }

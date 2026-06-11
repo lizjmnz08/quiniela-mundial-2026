@@ -24,7 +24,7 @@ async function initDB() {
     try {
         console.log('🔄 Conectando a PostgreSQL...');
         
-        // Crear tablas
+        // ========== TABLA USUARIOS ==========
         await pool.query(`
             CREATE TABLE IF NOT EXISTS usuarios (
                 id SERIAL PRIMARY KEY,
@@ -36,7 +36,22 @@ async function initDB() {
                 fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
+        console.log('✅ Tabla usuarios verificada');
         
+        // 🆕 COLUMNAS DE RECUPERACIÓN DE CONTRASEÑA
+        await pool.query(`
+            ALTER TABLE usuarios 
+            ADD COLUMN IF NOT EXISTS reset_codigo VARCHAR(6)
+        `);
+        console.log('✅ Columna reset_codigo verificada');
+        
+        await pool.query(`
+            ALTER TABLE usuarios 
+            ADD COLUMN IF NOT EXISTS reset_expiracion TIMESTAMP
+        `);
+        console.log('✅ Columna reset_expiracion verificada');
+        
+        // ========== TABLA PARTIDOS ==========
         await pool.query(`
             CREATE TABLE IF NOT EXISTS partidos (
                 id INTEGER PRIMARY KEY,
@@ -49,7 +64,9 @@ async function initDB() {
                 nombre TEXT
             )
         `);
+        console.log('✅ Tabla partidos verificada');
         
+        // ========== TABLA APUESTAS ==========
         await pool.query(`
             CREATE TABLE IF NOT EXISTS apuestas (
                 id SERIAL PRIMARY KEY,
@@ -62,6 +79,7 @@ async function initDB() {
             )
         `);
         
+        // ========== TABLA RESULTADOS ==========
         await pool.query(`
             CREATE TABLE IF NOT EXISTS resultados (
                 partido_id INTEGER PRIMARY KEY REFERENCES partidos(id),
@@ -71,6 +89,7 @@ async function initDB() {
             )
         `);
         
+        // ========== TABLA RANKING ==========
         await pool.query(`
             CREATE TABLE IF NOT EXISTS ranking (
                 usuario_id INTEGER PRIMARY KEY REFERENCES usuarios(id),
@@ -79,9 +98,9 @@ async function initDB() {
             )
         `);
         
-        console.log('✅ Tablas creadas/verificadas');
+        console.log('✅ Todas las tablas y columnas verificadas');
         
-        // Crear admin por defecto
+        // Crear admin por defecto...
         const adminCheck = await pool.query('SELECT * FROM usuarios WHERE username = $1', ['admin']);
         if (adminCheck.rows.length === 0) {
             const hash = await bcrypt.hash('admin123', 10);
@@ -100,6 +119,7 @@ async function initDB() {
         return false;
     }
 }
+
 
 // ========== INICIALIZAR PARTIDOS ==========
 async function initMatches() {
@@ -371,6 +391,142 @@ app.delete('/api/apuestas/mis-apuestas', verificarToken, async (req, res) => {
     await pool.query('INSERT INTO ranking (usuario_id, puntos) VALUES ($1, 0) ON CONFLICT (usuario_id) DO UPDATE SET puntos = 0', [req.usuario.id]);
     res.json({ success: true });
 });
+// ==========================================
+// 🔑 RECUPERACIÓN DE CONTRASEÑA
+// ==========================================
+
+// Endpoint 1: Solicitar código de recuperación
+app.post('/api/auth/recuperar-password', async (req, res) => {
+    try {
+        const { email } = req.body;
+        
+        if (!email) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Email es requerido' 
+            });
+        }
+        
+        // Buscar usuario por email
+        const user = await pool.query(
+            'SELECT * FROM usuarios WHERE email = $1', 
+            [email]
+        );
+        
+        if (user.rows.length === 0) {
+            return res.json({ 
+                success: false, 
+                error: 'No existe una cuenta con este email' 
+            });
+        }
+        
+        // Generar código aleatorio de 6 dígitos
+        const codigo = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        // Guardar código en la base de datos
+        await pool.query(
+            `UPDATE usuarios 
+             SET reset_codigo = $1, 
+                 reset_expiracion = NOW() + INTERVAL '15 minutes' 
+             WHERE email = $2`,
+            [codigo, email]
+        );
+        
+        console.log(`📧 Código para ${email}: ${codigo}`);
+        
+        res.json({ 
+            success: true, 
+            message: 'Código enviado a tu email',
+            codigo: codigo // ⚠️ Quitar en producción
+        });
+        
+    } catch (error) {
+        console.error('Error en recuperar-password:', error);
+        res.status(500).json({ success: false, error: 'Error del servidor' });
+    }
+});
+
+// Endpoint 2: Verificar código
+app.post('/api/auth/verificar-codigo', async (req, res) => {
+    try {
+        const { email, codigo } = req.body;
+        
+        if (!email || !codigo) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Email y código son requeridos' 
+            });
+        }
+        
+        const user = await pool.query(
+            `SELECT * FROM usuarios 
+             WHERE email = $1 
+             AND reset_codigo = $2 
+             AND reset_expiracion > NOW()`,
+            [email, codigo]
+        );
+        
+        if (user.rows.length === 0) {
+            return res.json({ 
+                success: false, 
+                error: 'Código inválido o expirado' 
+            });
+        }
+        
+        res.json({ success: true, message: 'Código verificado' });
+        
+    } catch (error) {
+        console.error('Error en verificar-codigo:', error);
+        res.status(500).json({ success: false, error: 'Error del servidor' });
+    }
+});
+
+// Endpoint 3: Cambiar contraseña
+app.post('/api/auth/cambiar-password', async (req, res) => {
+    try {
+        const { email, newPassword } = req.body;
+        
+        if (!email || !newPassword) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Email y nueva contraseña son requeridos' 
+            });
+        }
+        
+        if (newPassword.length < 4) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'La contraseña debe tener al menos 4 caracteres' 
+            });
+        }
+        
+        // Encriptar contraseña (usando bcryptjs que ya tienes)
+        const bcrypt = require('bcryptjs');
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        
+        // Actualizar en base de datos
+        await pool.query(
+            `UPDATE usuarios 
+             SET password = $1, 
+                 reset_codigo = NULL, 
+                 reset_expiracion = NULL 
+             WHERE email = $2`,
+            [hashedPassword, email]
+        );
+        
+        console.log(`🔐 Contraseña actualizada para: ${email}`);
+        
+        res.json({ 
+            success: true, 
+            message: 'Contraseña actualizada exitosamente' 
+        });
+        
+    } catch (error) {
+        console.error('Error en cambiar-password:', error);
+        res.status(500).json({ success: false, error: 'Error del servidor' });
+    }
+});
+
 
 // ========== INICIAR SERVIDOR ==========
 async function startServer() {

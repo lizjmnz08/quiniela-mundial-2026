@@ -245,7 +245,9 @@
     const golesLocal = document.getElementById('golesLocal').value;
     const golesVisitante = document.getElementById('golesVisitante').value;
     const msg = document.getElementById('msgResultado');
+    const token = localStorage.getItem('token');
     
+    // Validaciones
     if (!partidoId) {
         mostrarMensaje(msg, 'error', '❌ Selecciona un partido');
         return;
@@ -256,12 +258,29 @@
         return;
     }
     
+    if (!token) {
+        mostrarMensaje(msg, 'error', '❌ No hay sesión. Inicia sesión de nuevo.');
+        return;
+    }
+    
+    // Mostrar cargando
+    msg.style.display = 'block';
+    msg.style.background = 'rgba(255,215,0,0.2)';
+    msg.style.color = '#FFD700';
+    msg.style.border = '1px solid #FFD700';
+    msg.textContent = '⏳ Guardando resultado...';
+    
     try {
-        const response = await fetch(`${API_URL}/resultados`, {
+        console.log('🔍 Intentando guardar resultado...');
+        console.log('URL:', API_URL + '/resultados');
+        console.log('Token:', token ? 'Presente' : 'NO HAY TOKEN');
+        console.log('Datos:', { partidoId, golesLocal, golesVisitante });
+        
+        const response = await fetch(API_URL + '/resultados', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': 'Bearer ' + token
             },
             body: JSON.stringify({
                 partidoId: parseInt(partidoId),
@@ -270,18 +289,23 @@
             })
         });
         
+        console.log('📡 Respuesta:', response.status);
+        
         const data = await response.json();
+        console.log('📊 Datos:', data);
         
         if (data.success) {
             mostrarMensaje(msg, 'success', '✅ Resultado guardado y puntos actualizados');
             document.getElementById('golesLocal').value = '';
             document.getElementById('golesVisitante').value = '';
+            document.getElementById('selectPartido').value = '';
             cargarResultadosCargados();
         } else {
             mostrarMensaje(msg, 'error', '❌ ' + (data.error || 'Error al guardar'));
         }
     } catch (error) {
-        mostrarMensaje(msg, 'error', '❌ Error de conexión');
+        console.error('🔥 Error completo:', error);
+        mostrarMensaje(msg, 'error', '❌ Error: ' + error.message);
     }
 }
 

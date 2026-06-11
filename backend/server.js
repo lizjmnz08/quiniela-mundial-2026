@@ -505,6 +505,32 @@ app.post('/api/auth/cambiar-password', async (req, res) => {
                 error: 'La contraseña debe tener al menos 4 caracteres' 
             });
         }
+        // ========== GUARDAR RESULTADO OFICIAL ==========
+app.post('/api/resultados', verificarToken, async (req, res) => {
+    try {
+        // Verificar que sea admin
+        if (req.usuario.role !== 'admin') {
+            return res.status(403).json({ success: false, error: 'Solo administradores' });
+        }
+        
+        const { partidoId, golesLocal, golesVisitante } = req.body;
+        
+        console.log('📊 Guardando resultado:', { partidoId, golesLocal, golesVisitante });
+        
+        await pool.query(
+            `INSERT INTO resultados (partido_id, goles_local, goles_visitante) 
+             VALUES ($1, $2, $3)
+             ON CONFLICT (partido_id) 
+             DO UPDATE SET goles_local = $2, goles_visitante = $3, actualizado = NOW()`,
+            [partidoId, golesLocal, golesVisitante]
+        );
+        
+        res.json({ success: true, message: 'Resultado guardado' });
+    } catch (error) {
+        console.error('Error al guardar resultado:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
         
         // Encriptar contraseña (usando bcryptjs que ya tienes)
         const bcrypt = require('bcryptjs');

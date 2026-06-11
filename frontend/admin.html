@@ -154,9 +154,9 @@
 <div style="background: rgba(255,215,0,0.05); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid rgba(255,215,0,0.2);">
     <h3 style="color: #FFD700; margin-bottom: 15px;">📋 Cargar Resultado Individual</h3>
     
-    <select id="selectPartido" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,215,0,0.3); border-radius: 10px; color: white; margin-bottom: 15px; font-size: 0.9em;">
-        <option value="">Seleccionar partido...</option>
-    </select>
+    <select id="selectPartido" style="width: 100%; padding: 10px; background: #1a3a4a; border: 2px solid rgba(255,215,0,0.3); border-radius: 10px; color: white; margin-bottom: 15px; font-size: 0.9em;">
+    <option value="" style="color: #a0c4d8; background: #1a3a4a;">Seleccionar partido...</option>
+</select>
     
     <div style="display: flex; gap: 15px; align-items: center; justify-content: center; margin-bottom: 15px;">
         <div style="text-align: center;">
@@ -206,9 +206,12 @@
         
         if (!select) return;
         
-        select.innerHTML = '<option value="">Seleccionar partido...</option>';
+        // 🆕 Agregar estilos base al select
+        select.style.background = '#1a3a4a';
+        select.style.color = 'white';
         
-        // Ordenar por fecha
+        select.innerHTML = '<option value="" style="color: #a0c4d8; background: #1a3a4a;">Seleccionar partido...</option>';
+        
         partidos.sort((a, b) => {
             const dateA = new Date(a.fecha.split('/').reverse().join('-'));
             const dateB = new Date(b.fecha.split('/').reverse().join('-'));
@@ -218,15 +221,23 @@
         partidos.forEach(p => {
             const option = document.createElement('option');
             option.value = p.id;
+            
+            // 🆕 ESTILOS PARA CADA OPCIÓN
+            option.style.color = 'white';
+            option.style.background = '#1a3a4a';
+            option.style.padding = '8px';
+            
             const localClean = p.local.split(' ').slice(1).join(' ');
             const visitClean = p.visitante.split(' ').slice(1).join(' ');
             option.textContent = `${p.local.split(' ')[0]} ${localClean} vs ${visitClean} ${p.visitante.split(' ')[0]} - ${p.fecha} ${p.hora}`;
+            
             select.appendChild(option);
         });
     } catch (error) {
         console.error('Error cargando partidos:', error);
     }
 }
+
 
     // ========== CARGAR RESULTADO MANUAL ==========
     async function cargarResultadoManual() {

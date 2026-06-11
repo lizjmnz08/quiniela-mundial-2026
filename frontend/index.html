@@ -485,6 +485,7 @@
             <div class="progress-bar">
                 <div class="progress-fill" id="progressBar"></div>
             </div>
+            <span id="progressText">0/104 partidos</span>
             <div class="action-buttons">
                 <button class="btn btn-primary" onclick="guardarTodasLasApuestas()">💾 Guardar Predicciones</button>
                 <button class="btn btn-secondary" onclick="verRanking()">🏆 Ver Ranking</button>
@@ -881,42 +882,28 @@
             await renderizarPartidos();
         }
 
-       function actualizarProgreso() {
-    const total = partidosGlobales.length;
-    
-    // Contar apuestas que tienen ambos goles ingresados (no vacíos, no null, no undefined)
+ function actualizarProgreso() {
     let completados = 0;
+    const total = 104; // Total de partidos fijo
     
-    if (apuestasUsuario && apuestasUsuario.length > 0) {
-        completados = apuestasUsuario.filter(a => {
-            const localValido = a.goles_local !== undefined && 
-                               a.goles_local !== null && 
-                               a.goles_local !== '';
-            const visitanteValido = a.goles_visitante !== undefined && 
-                                   a.goles_visitante !== null && 
-                                   a.goles_visitante !== '';
-            return localValido && visitanteValido;
-        }).length;
-    }
+    // Contar inputs con valores directamente del DOM
+    const todosInputsLocal = document.querySelectorAll('input[id^="local_"]');
     
-    // También contar desde los inputs del DOM como respaldo
-    if (completados === 0) {
-        const inputsLocal = document.querySelectorAll('input[id^="local_"]');
-        inputsLocal.forEach(input => {
-            const id = input.id.replace('local_', '');
-            const visitInput = document.getElementById('visit_' + id);
-            if (input.value !== '' && visitInput && visitInput.value !== '' && !input.disabled) {
-                completados++;
-            }
-        });
-    }
+    todosInputsLocal.forEach(input => {
+        const id = input.id.replace('local_', '');
+        const visitInput = document.getElementById('visit_' + id);
+        
+        if (input.value !== '' && input.value !== null && 
+            visitInput && visitInput.value !== '' && visitInput.value !== null &&
+            !input.disabled) {
+            completados++;
+        }
+    });
     
+    // Actualizar barra y texto
     const pct = total > 0 ? (completados / total) * 100 : 0;
-    
     document.getElementById('progressBar').style.width = pct + '%';
-    document.getElementById('progressText').textContent = `${completados}/${total} partidos`;
-    
-    console.log(`📊 Progreso: ${completados}/${total} apuestas (${pct.toFixed(1)}%)`);
+    document.getElementById('progressText').textContent = completados + '/' + total + ' partidos';
 }
 
         // Función para cerrar el modal de ranking
@@ -1014,6 +1001,25 @@ async function actualizarRanking() {
         }
 
         document.addEventListener('DOMContentLoaded', inicializar);
+
+        // ========== FORZAR ACTUALIZACIÓN CADA 2 SEGUNDOS ==========
+setInterval(function() {
+    let completados = 0;
+    const total = 104;
+    
+    document.querySelectorAll('input[id^="local_"]').forEach(function(input) {
+        var id = input.id.replace('local_', '');
+        var visitInput = document.getElementById('visit_' + id);
+        
+        if (input.value !== '' && visitInput && visitInput.value !== '' && !input.disabled) {
+            completados++;
+        }
+    });
+    
+    var pct = total > 0 ? (completados / total) * 100 : 0;
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressText').textContent = completados + '/' + total + ' partidos';
+}, 2000);
     </script>
 </body>
 </html>

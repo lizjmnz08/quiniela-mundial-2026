@@ -121,6 +121,43 @@
         <div class="results-section">
             <h2>⚽ Gestión de Resultados</h2>
             <p>Simula resultados de partidos para calcular puntuaciones</p>
+
+            <!-- 🆕 SECCIÓN: CARGAR RESULTADO MANUAL -->
+<div style="background: rgba(255,215,0,0.05); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid rgba(255,215,0,0.2);">
+    <h3 style="color: #FFD700; margin-bottom: 15px;">📋 Cargar Resultado Individual</h3>
+    
+    <select id="selectPartido" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,215,0,0.3); border-radius: 10px; color: white; margin-bottom: 15px; font-size: 0.9em;">
+        <option value="">Seleccionar partido...</option>
+    </select>
+    
+    <div style="display: flex; gap: 15px; align-items: center; justify-content: center; margin-bottom: 15px;">
+        <div style="text-align: center;">
+            <label style="color: #c4e0f0; font-size: 0.8em;">Goles Local</label>
+            <input type="number" id="golesLocal" min="0" max="20" placeholder="0" style="width: 80px; padding: 10px; text-align: center; font-size: 1.2em; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,215,0,0.3); border-radius: 10px; color: #FFD700;">
+        </div>
+        
+        <span style="color: #FFD700; font-size: 1.5em; font-weight: bold;">VS</span>
+        
+        <div style="text-align: center;">
+            <label style="color: #c4e0f0; font-size: 0.8em;">Goles Visitante</label>
+            <input type="number" id="golesVisitante" min="0" max="20" placeholder="0" style="width: 80px; padding: 10px; text-align: center; font-size: 1.2em; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,215,0,0.3); border-radius: 10px; color: #FFD700;">
+        </div>
+    </div>
+    
+    <button class="btn btn-primary" onclick="cargarResultadoManual()" style="width: 100%; padding: 12px; font-size: 1em;">
+        💾 Guardar Resultado Oficial
+    </button>
+    
+    <div id="msgResultado" style="margin-top: 10px; padding: 10px; border-radius: 10px; display: none; text-align: center;"></div>
+</div>
+
+<!-- 🆕 RESULTADOS YA CARGADOS -->
+<div style="background: rgba(0,255,0,0.05); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid rgba(0,255,0,0.2);">
+    <h3 style="color: #00ff88; margin-bottom: 15px;">✅ Resultados Cargados</h3>
+    <div id="listaResultados" style="max-height: 300px; overflow-y: auto;">
+        <p style="color: #a0c4d8; text-align: center;">No hay resultados cargados aún</p>
+    </div>
+</div>
             <button class="btn btn-success" onclick="simularResultados()">⚡ Simular Resultados</button>
             <button class="btn btn-secondary" onclick="limpiarResultados()">🗑️ Limpiar Resultados</button>
             <div id="message" class="message"></div>
@@ -130,6 +167,165 @@
     <script>
         const API_URL = 'https://quiniela-mundial-2026-production-bde0.up.railway.app/api';
         let token = localStorage.getItem('token');
+
+
+    // ========== CARGAR PARTIDOS EN EL SELECTOR ==========
+    async function cargarPartidosEnSelector() {
+    try {
+        const response = await fetch(`${API_URL}/partidos`);
+        const partidos = await response.json();
+        const select = document.getElementById('selectPartido');
+        
+        if (!select) return;
+        
+        select.innerHTML = '<option value="">Seleccionar partido...</option>';
+        
+        // Ordenar por fecha
+        partidos.sort((a, b) => {
+            const dateA = new Date(a.fecha.split('/').reverse().join('-'));
+            const dateB = new Date(b.fecha.split('/').reverse().join('-'));
+            return dateA - dateB;
+        });
+        
+        partidos.forEach(p => {
+            const option = document.createElement('option');
+            option.value = p.id;
+            const localClean = p.local.split(' ').slice(1).join(' ');
+            const visitClean = p.visitante.split(' ').slice(1).join(' ');
+            option.textContent = `${p.local.split(' ')[0]} ${localClean} vs ${visitClean} ${p.visitante.split(' ')[0]} - ${p.fecha} ${p.hora}`;
+            select.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error cargando partidos:', error);
+    }
+}
+
+    // ========== CARGAR RESULTADO MANUAL ==========
+    async function cargarResultadoManual() {
+    const partidoId = document.getElementById('selectPartido').value;
+    const golesLocal = document.getElementById('golesLocal').value;
+    const golesVisitante = document.getElementById('golesVisitante').value;
+    const msg = document.getElementById('msgResultado');
+    
+    if (!partidoId) {
+        mostrarMensaje(msg, 'error', '❌ Selecciona un partido');
+        return;
+    }
+    
+    if (golesLocal === '' || golesVisitante === '') {
+        mostrarMensaje(msg, 'error', '❌ Ingresa ambos goles');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/resultados`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                partidoId: parseInt(partidoId),
+                golesLocal: parseInt(golesLocal),
+                golesVisitante: parseInt(golesVisitante)
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            mostrarMensaje(msg, 'success', '✅ Resultado guardado y puntos actualizados');
+            document.getElementById('golesLocal').value = '';
+            document.getElementById('golesVisitante').value = '';
+            cargarResultadosCargados();
+        } else {
+            mostrarMensaje(msg, 'error', '❌ ' + (data.error || 'Error al guardar'));
+        }
+    } catch (error) {
+        mostrarMensaje(msg, 'error', '❌ Error de conexión');
+    }
+}
+
+    // ========== MOSTRAR RESULTADOS CARGADOS ==========
+    async function cargarResultadosCargados() {
+    try {
+        const [resultadosRes, partidosRes] = await Promise.all([
+            fetch(`${API_URL}/resultados`),
+            fetch(`${API_URL}/partidos`)
+        ]);
+        
+        const resultados = await resultadosRes.json();
+        const partidos = await partidosRes.json();
+        const div = document.getElementById('listaResultados');
+        
+        if (!resultados || resultados.length === 0) {
+            div.innerHTML = '<p style="color: #a0c4d8; text-align: center;">No hay resultados cargados aún</p>';
+            return;
+        }
+        
+        let html = '';
+        resultados.forEach(r => {
+            const p = partidos.find(p => p.id === r.partido_id);
+            const localClean = p ? p.local.split(' ').slice(1).join(' ') : 'Local';
+            const visitClean = p ? p.visitante.split(' ').slice(1).join(' ') : 'Visitante';
+            const fecha = p ? `${p.fecha} ${p.hora}` : '';
+            
+            html += `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 8px;">
+                    <span style="flex: 1; font-size: 0.85em;">${localClean} vs ${visitClean}</span>
+                    <span style="color: #FFD700; font-weight: bold; margin: 0 15px;">${r.goles_local} - ${r.goles_visitante}</span>
+                    <span style="font-size: 0.7em; color: #a0c4d8; margin-right: 10px;">${fecha}</span>
+                    <button onclick="eliminarResultado(${r.partido_id})" style="background: rgba(255,0,0,0.3); border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer;">🗑️</button>
+                </div>
+            `;
+        });
+        
+        div.innerHTML = html;
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+    // ========== ELIMINAR RESULTADO ==========
+    async function eliminarResultado(partidoId) {
+    if (!confirm('¿Eliminar este resultado?')) return;
+    
+    try {
+        await fetch(`${API_URL}/resultados/${partidoId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        cargarResultadosCargados();
+    } catch (error) {
+        alert('Error al eliminar');
+    }
+}
+
+    // ========== MOSTRAR MENSAJE ==========
+    function mostrarMensaje(elemento, tipo, texto) {
+    elemento.style.display = 'block';
+    elemento.textContent = texto;
+    
+    if (tipo === 'success') {
+        elemento.style.background = 'rgba(0,255,0,0.2)';
+        elemento.style.color = '#00ff88';
+        elemento.style.border = '1px solid #00ff88';
+    } else {
+        elemento.style.background = 'rgba(255,0,0,0.2)';
+        elemento.style.color = '#ff8888';
+        elemento.style.border = '1px solid #ff4444';
+    }
+    
+    setTimeout(() => {
+        elemento.style.display = 'none';
+    }, 4000);
+}
+
+    // ========== INICIALIZAR ==========
+    document.addEventListener('DOMContentLoaded', () => {
+    cargarPartidosEnSelector();
+    cargarResultadosCargados();
+});
 
         async function checkAuth() {
             if (!token) { window.location.href = 'login.html'; return false; }

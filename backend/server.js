@@ -677,6 +677,43 @@ app.get('/api/apuestas/usuario/:id', verificarToken, async (req, res) => {
         res.status(500).json({ error: e.message });
     }
 });
+// ==========================================
+// 🗑️ ELIMINAR USUARIO (SOLO ADMIN)
+// ==========================================
+app.delete('/api/usuarios/:id', verificarToken, async (req, res) => {
+    try {
+        // Verificar que sea admin
+        if (req.usuario.role !== 'admin') {
+            return res.status(403).json({ success: false, error: 'Solo admin' });
+        }
+        
+        const usuarioId = req.params.id;
+        
+        // No permitir eliminar al propio admin
+        if (parseInt(usuarioId) === req.usuario.id) {
+            return res.status(400).json({ success: false, error: 'No puedes eliminarte a ti mismo' });
+        }
+        
+        // Verificar que el usuario existe
+        const userCheck = await pool.query('SELECT * FROM usuarios WHERE id = $1', [usuarioId]);
+        if (userCheck.rows.length === 0) {
+            return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
+        }
+        
+        // Eliminar en orden: apuestas, ranking, usuario
+        await pool.query('DELETE FROM apuestas WHERE usuario_id = $1', [usuarioId]);
+        await pool.query('DELETE FROM ranking WHERE usuario_id = $1', [usuarioId]);
+        await pool.query('DELETE FROM usuarios WHERE id = $1', [usuarioId]);
+        
+        console.log('🗑️ Usuario eliminado:', usuarioId);
+        
+        res.json({ success: true, message: 'Usuario eliminado correctamente' });
+        
+    } catch (error) {
+        console.error('Error al eliminar usuario:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 
 // ========== INICIAR SERVIDOR ==========
 async function startServer() {

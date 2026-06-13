@@ -197,6 +197,13 @@
     <select id="selectUsuario" onchange="verApuestasUsuario()" style="width: 100%; padding: 12px; background: #1a3a4a; border: 2px solid rgba(255,215,0,0.3); border-radius: 10px; color: white; margin-bottom: 15px; font-size: 0.9em; cursor: pointer;">
         <option value="" style="color: #a0c4d8; background: #1a3a4a;">Seleccionar jugador...</option>
     </select>
+
+    <select id="selectUsuario" onchange="verApuestasUsuario()" style="width: 100%; padding: 12px; background: #1a3a4a; border: 2px solid rgba(255,215,0,0.3); border-radius: 10px; color: white; margin-bottom: 10px; font-size: 0.9em; cursor: pointer;">
+    <option value="" style="color: #a0c4d8; background: #1a3a4a;">Seleccionar jugador...</option>
+</select>
+
+<!-- 🆕 Contenedor para botones de eliminar -->
+<div id="contenedorUsuarios"></div>
     
     <div id="tablaApuestasJugador" style="max-height: 400px; overflow-y: auto;">
         <p style="color: #a0c4d8; text-align: center; padding: 20px;">👆 Selecciona un jugador para ver sus apuestas</p>
@@ -537,6 +544,7 @@ async function limpiarApuestasUsuario(usuarioId, username) {
 // ==========================================
 
 // Cargar lista de usuarios en el selector
+// Cargar lista de usuarios en el selector con opción de eliminar
 async function cargarUsuariosEnSelector() {
     try {
         const response = await fetch(API_URL + '/usuarios');
@@ -558,8 +566,64 @@ async function cargarUsuariosEnSelector() {
                 select.appendChild(option);
             }
         });
+        
+        // 🆕 Agregar botones de eliminar al lado del selector
+        const contenedor = document.getElementById('contenedorUsuarios');
+        if (contenedor) {
+            let html = '<div style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px;">';
+            
+            usuarios.forEach(u => {
+                if (u.role !== 'admin') {
+                    html += `
+                        <div style="display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 20px; gap: 8px;">
+                            <span style="font-size: 0.8em;">${u.username}</span>
+                            <button onclick="eliminarUsuario(${u.id}, '${u.username}')" 
+                                style="background: rgba(255,0,0,0.3); color:white; border:none; padding: 3px 8px; border-radius: 50%; cursor:pointer; font-size: 0.7em;"
+                                title="Eliminar ${u.username}">
+                                🗑️
+                            </button>
+                        </div>
+                    `;
+                }
+            });
+            
+            html += '</div>';
+            contenedor.innerHTML = html;
+        }
+        
     } catch(e) {
         console.error('Error cargando usuarios:', e);
+    }
+}
+
+// 🆕 Función para eliminar usuario
+async function eliminarUsuario(id, username) {
+    if (!confirm(`⚠️ ¿Estás seguro de eliminar a "${username}"?\n\nSe borrarán todas sus apuestas y puntos.\nEsta acción NO se puede deshacer.`)) {
+        return;
+    }
+    
+    const token = localStorage.getItem('token');
+    
+    try {
+        const response = await fetch(API_URL + '/usuarios/' + id, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('✅ Usuario eliminado correctamente');
+            // Recargar la lista
+            cargarUsuariosEnSelector();
+        } else {
+            alert('❌ Error: ' + (data.error || 'Desconocido'));
+        }
+    } catch(e) {
+        console.error('Error:', e);
+        alert('❌ Error de conexión');
     }
 }
 

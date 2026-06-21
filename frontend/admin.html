@@ -208,6 +208,13 @@
     <div id="tablaApuestasJugador" style="max-height: 400px; overflow-y: auto;">
         <p style="color: #a0c4d8; text-align: center; padding: 20px;">👆 Selecciona un jugador para ver sus apuestas</p>
     </div>
+    <div style="background: rgba(33,150,243,0.05); padding:20px; border-radius:15px; margin:20px 0;">
+    <h3>👀 Ver/Editar Apuestas</h3>
+    <select id="selectUsuario" onchange="verApuestasUsuario()" style="width:100%; padding:10px; background:#1a3a4a; color:white; border-radius:10px;">
+        <option value="">Seleccionar jugador...</option>
+    </select>
+    <div id="tablaApuestasJugador" style="margin-top:15px;"></div>
+</div>
 </div>
     </div>
 

@@ -1012,6 +1012,13 @@ setInterval(function() {
     document.getElementById('progressBar').style.width = pct + '%';
     document.getElementById('progressText').textContent = completados + '/' + total + ' partidos';
 }, 2000);
+
+// Exponer variables globalmente para debug
+window.partidosGlobales = partidosGlobales;
+window.apuestasUsuario = apuestasUsuario;
+window.resultadosGlobales = resultadosGlobales;
+window.cargarDatos = cargarDatos;
+
     </script>
 </body>
 </html>

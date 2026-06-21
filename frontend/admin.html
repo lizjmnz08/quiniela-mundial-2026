@@ -148,9 +148,12 @@
             </div>
 
             <div style="background: rgba(0,255,0,0.05); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid rgba(0,255,0,0.2);">
-                <h3 style="color: #00ff88; margin-bottom: 15px;">✅ Resultados Cargados</h3>
-                <div id="listaResultados" style="max-height: 300px; overflow-y: auto;"><p style="color: #a0c4d8; text-align: center;">No hay resultados cargados aún</p></div>
-            </div>
+    <h3 style="color: #00ff88; margin-bottom: 15px;">✅ Resultados Cargados</h3>
+    <div id="listaResultados" style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+        <p style="color: #a0c4d8; text-align: center;">No hay resultados cargados aún</p>
+    </div>
+</div>
+            
             <button class="btn btn-success" onclick="simularResultados()">⚡ Simular Resultados</button>
             <button class="btn btn-secondary" onclick="limpiarResultados()">🗑️ Limpiar Resultados</button>
             <div id="message" class="message"></div>
@@ -267,14 +270,15 @@
             const partidos = await pRes.json();
             const div = document.getElementById('listaResultados');
             if (!resultados.length) { div.innerHTML = '<p style="color:#a0c4d8;">No hay resultados</p>'; return; }
+          
             div.innerHTML = resultados.map(r => {
-                const p = partidos.find(x => x.id === r.partido_id);
-                return `<div style="display:flex; justify-content:space-between; padding:10px; background:rgba(255,255,255,0.05); border-radius:10px; margin-bottom:8px;">
-                    <span>${p ? p.local + ' vs ' + p.visitante : 'Partido #'+r.partido_id}</span>
-                    <span style="color:#FFD700; font-weight:bold;">${r.goles_local} - ${r.goles_visitante}</span>
-                    <button onclick="eliminarResultado(${r.partido_id})" style="background:rgba(255,0,0,0.3); color:white; border:none; border-radius:5px; cursor:pointer;">🗑️</button>
-                </div>`;
-            }).join('');
+    const p = partidos.find(x => x.id === r.partido_id);
+    return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:rgba(255,255,255,0.05); border-radius:10px;">
+        <span style="flex:1;">${p ? p.local + ' vs ' + p.visitante : 'Partido #'+r.partido_id}</span>
+        <span style="color:#FFD700; font-weight:bold; margin:0 15px;">${r.goles_local} - ${r.goles_visitante}</span>
+        <button onclick="eliminarResultado(${r.partido_id})" style="background:rgba(255,0,0,0.3); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">🗑️</button>
+    </div>`;
+}).join('');
         }
 
         async function eliminarResultado(id) {

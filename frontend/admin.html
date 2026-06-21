@@ -315,34 +315,77 @@
         }
 
         async function verApuestasUsuario() {
-            const uid = document.getElementById('selectUsuario').value;
-            const div = document.getElementById('tablaApuestasJugador');
-            if (!uid) { div.innerHTML = '<p style="color:#a0c4d8;">Selecciona un jugador</p>'; return; }
-            div.innerHTML = '<p style="color:#FFD700;">Cargando...</p>';
-            const [aRes, pRes, rRes] = await Promise.all([
-                fetch(`${API_URL}/apuestas/usuario/${uid}`, { headers: { 'Authorization': `Bearer ${token}` } }),
-                fetch(`${API_URL}/partidos`), fetch(`${API_URL}/resultados`)
-            ]);
-            const apuestas = await aRes.json();
-            const partidos = await pRes.json();
-            const resultados = await rRes.json();
-            if (!apuestas.length) { div.innerHTML = '<p style="color:#a0c4d8;">Sin apuestas</p>'; return; }
-            div.innerHTML = `<table style="width:100%; font-size:0.8em;"><tr><th>Partido</th><th>Apuesta</th><th>Resultado</th><th>Acción</th></tr>` +
-            apuestas.map(a => {
-                const p = partidos.find(x => x.id === a.partido_id);
-                const r = resultados.find(x => x.partido_id === a.partido_id);
-                const bloqueado = !!r;
-                return `<tr>
-                    <td>${p ? p.local + ' vs ' + p.visitante : '#'+a.partido_id}</td>
-                    ${bloqueado ? `<td style="color:#ff8888;">${a.goles_local}-${a.goles_visitante} 🔒</td><td>${r.goles_local}-${r.goles_visitante}</td><td>🔒</td>` :
-                    `<td><input id="el_${a.partido_id}" value="${a.goles_local}" style="width:35px; background:#1a3a4a; color:#FFD700; border:1px solid #FFD700; border-radius:4px; text-align:center;"> - <input id="ev_${a.partido_id}" value="${a.goles_visitante}" style="width:35px; background:#1a3a4a; color:#FFD700; border:1px solid #FFD700; border-radius:4px; text-align:center;"></td>
-                    <td>⏳</td>
-                    <td><button onclick="guardarApuestaAdmin(${uid},${a.partido_id})" style="background:#FFD700; color:#0a1f2e; border:none; border-radius:5px; cursor:pointer;">💾</button></td>`}
-                </tr>`;
-            }).join('') + '</table>' +
-            `<div style="text-align:center; margin-top:15px;"><button onclick="guardarTodasApuestasAdmin(${uid})" style="background:#FFD700; color:#0a1f2e; border:none; padding:10px 30px; border-radius:10px; cursor:pointer; font-weight:bold;">💾 Guardar Todos</button></div>`;
+    const usuarioId = document.getElementById('selectUsuario').value;
+    const div = document.getElementById('tablaApuestasJugador');
+    const token = localStorage.getItem('token');
+    
+    if (!usuarioId) {
+        div.innerHTML = '<p style="color: #a0c4d8; text-align: center;">👆 Selecciona un jugador</p>';
+        return;
+    }
+    
+    div.innerHTML = '<p style="color: #FFD700; text-align: center;">⏳ Cargando...</p>';
+    
+    try {
+        const [apuestasRes, partidosRes, resultadosRes] = await Promise.all([
+            fetch(API_URL + '/apuestas/usuario/' + usuarioId, { headers: { 'Authorization': 'Bearer ' + token } }),
+            fetch(API_URL + '/partidos'),
+            fetch(API_URL + '/resultados')
+        ]);
+        
+        const apuestas = await apuestasRes.json();
+        const partidos = await partidosRes.json();
+        const resultados = await resultadosRes.json();
+        
+        if (!apuestas || apuestas.length === 0) {
+            div.innerHTML = '<p style="color: #a0c4d8;">📭 Sin apuestas</p>';
+            return;
         }
-
+        
+        let html = '<table style="width:100%; font-size:0.8em; border-collapse:collapse;">';
+        html += '<tr><th style="padding:6px; color:#FFD700;">Partido</th><th style="padding:6px; color:#FFD700;">Apuesta</th><th style="padding:6px; color:#FFD700;">Resultado</th><th style="padding:6px; color:#FFD700;">Pts</th><th style="padding:6px; color:#FFD700;">Acción</th></tr>';
+        
+        apuestas.forEach(a => {
+            const p = partidos.find(x => x.id === a.partido_id);
+            const r = resultados.find(x => x.partido_id === a.partido_id);
+            const nombre = p ? p.local + ' vs ' + p.visitante : 'Partido #' + a.partido_id;
+            const partidoYaInicio = !!r;
+            
+            let puntosHTML = '';
+            if (r) {
+                if (a.goles_local === r.goles_local && a.goles_visitante === r.goles_visitante) {
+                    puntosHTML = '<span style="color:#FFD700; font-weight:bold;">⭐ +3</span>';
+                } else if ((a.goles_local > a.goles_visitante && r.goles_local > r.goles_visitante) || (a.goles_local < a.goles_visitante && r.goles_local < r.goles_visitante) || (a.goles_local === a.goles_visitante && r.goles_local === r.goles_visitante)) {
+                    puntosHTML = '<span style="color:#00ff88; font-weight:bold;">✓ +1</span>';
+                } else {
+                    puntosHTML = '<span style="color:#ff4444;">✗ 0</span>';
+                }
+            } else {
+                puntosHTML = '<span style="color:#a0c4d8;">⏳</span>';
+            }
+            
+            html += '<tr><td style="padding:6px;">' + nombre + '</td>';
+            if (partidoYaInicio) {
+                html += '<td style="padding:6px; text-align:center; color:#ff8888;">' + a.goles_local + ' - ' + a.goles_visitante + ' 🔒</td>';
+                html += '<td style="padding:6px; text-align:center;">' + r.goles_local + ' - ' + r.goles_visitante + '</td>';
+                html += '<td style="padding:6px; text-align:center;">' + puntosHTML + '</td>';
+                html += '<td style="padding:6px; text-align:center;">🔒</td>';
+            } else {
+                html += '<td style="padding:6px; text-align:center;"><input id="edit_local_' + a.partido_id + '" value="' + a.goles_local + '" style="width:40px; background:#1a3a4a; color:#FFD700; border:1px solid #FFD700; text-align:center;"> - <input id="edit_visit_' + a.partido_id + '" value="' + a.goles_visitante + '" style="width:40px; background:#1a3a4a; color:#FFD700; border:1px solid #FFD700; text-align:center;"></td>';
+                html += '<td style="padding:6px; text-align:center;">⏳</td>';
+                html += '<td style="padding:6px; text-align:center;">' + puntosHTML + '</td>';
+                html += '<td style="padding:6px; text-align:center;"><button onclick="guardarApuestaAdmin(' + usuarioId + ',' + a.partido_id + ')" style="background:#FFD700; color:#0a1f2e; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">💾</button></td>';
+            }
+            html += '</tr>';
+        });
+        
+        html += '</table>';
+        div.innerHTML = html;
+        
+    } catch(e) {
+        div.innerHTML = '<p style="color:#ff6666;">❌ Error</p>';
+    }
+}
         async function guardarApuestaAdmin(uid, pid) {
             const gl = parseInt(document.getElementById('el_' + pid)?.value) || 0;
             const gv = parseInt(document.getElementById('ev_' + pid)?.value) || 0;

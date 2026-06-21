@@ -724,6 +724,40 @@ async function startServer() {
             console.log(`🐘 Base de datos: PostgreSQL`);
             console.log(`🔐 API disponible`);
         });
+        // Actualizar una apuesta (admin)
+app.post('/api/apuestas/admin/actualizar', verificarToken, async (req, res) => {
+    if (req.usuario.role !== 'admin') return res.status(403).json({ error: 'Solo admin' });
+    const { usuarioId, partidoId, golesLocal, golesVisitante } = req.body;
+    await pool.query(
+        `INSERT INTO apuestas (usuario_id, partido_id, goles_local, goles_visitante) 
+         VALUES ($1, $2, $3, $4) ON CONFLICT (usuario_id, partido_id) 
+         DO UPDATE SET goles_local = $3, goles_visitante = $4`,
+        [usuarioId, partidoId, golesLocal, golesVisitante]
+    );
+    res.json({ success: true });
+});
+
+// Actualizar todas las apuestas (admin)
+app.post('/api/apuestas/admin/actualizar-todas', verificarToken, async (req, res) => {
+    if (req.usuario.role !== 'admin') return res.status(403).json({ error: 'Solo admin' });
+    const { usuarioId, apuestas } = req.body;
+    for (const a of apuestas) {
+        await pool.query(
+            `INSERT INTO apuestas (usuario_id, partido_id, goles_local, goles_visitante) 
+             VALUES ($1, $2, $3, $4) ON CONFLICT (usuario_id, partido_id) 
+             DO UPDATE SET goles_local = $3, goles_visitante = $4`,
+            [usuarioId, a.partidoId, a.golesLocal, a.golesVisitante]
+        );
+    }
+    res.json({ success: true });
+});
+
+// Ver apuestas de un usuario (admin)
+app.get('/api/apuestas/usuario/:id', verificarToken, async (req, res) => {
+    if (req.usuario.role !== 'admin') return res.status(403).json({ error: 'Solo admin' });
+    const result = await pool.query('SELECT * FROM apuestas WHERE usuario_id = $1', [req.params.id]);
+    res.json(result.rows);
+});
     }
 }
 

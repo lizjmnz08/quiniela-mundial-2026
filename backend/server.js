@@ -14,6 +14,10 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+app.use(express.json());
+
+// 🆕 Servir archivos del frontend
+app.use(express.static(path.join(__dirname, '../frontend')));
 
 // ========== CONEXIÓN A POSTGRESQL ==========
 const pool = new Pool({

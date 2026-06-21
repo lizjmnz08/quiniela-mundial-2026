@@ -25,14 +25,6 @@
             align-items: center;
             flex-wrap: wrap;
         }
-        .btn-warning {
-            background: linear-gradient(45deg, #ff9800, #f57c00);
-            color: white;
-        }
-        .btn-warning:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
-        }
         h1 { color: #FFD700; }
         .admin-badge { background: #ff4444; padding: 5px 15px; border-radius: 20px; font-weight: bold; }
         .btn {
@@ -47,7 +39,6 @@
         .btn-danger { background: linear-gradient(45deg, #ff4444, #cc0000); color: white; }
         .btn-secondary { background: rgba(255, 255, 255, 0.2); color: white; }
         .btn-success { background: linear-gradient(45deg, #00cc88, #009966); color: white; }
-        .btn-info { background: linear-gradient(45deg, #2196F3, #1976D2); color: white; }
         .btn:hover { transform: translateY(-2px); }
         .stats-grid {
             display: grid;
@@ -90,40 +81,30 @@
         .watermark {
             position: fixed; bottom: 15px; right: 20px; font-size: 12px;
             color: rgba(255, 255, 255, 0.25); background: rgba(0, 0, 0, 0.3);
-            padding: 5px 12px; border-radius: 20px; backdrop-filter: blur(5px);
-            pointer-events: none; z-index: 999;
+            padding: 5px 12px; border-radius: 20px; pointer-events: none; z-index: 999;
         }
-        #selectPartido {
-            width: 100%;
-            padding: 10px;
-            background: #1a3a4a !important;
-            border: 2px solid rgba(255,215,0,0.3);
-            border-radius: 10px;
-            color: white !important;
-            margin-bottom: 15px;
-            font-size: 0.9em;
-            cursor: pointer;
-        }
-        #selectPartido option {
-            color: white !important;
-            background: #1a3a4a !important;
-            padding: 8px;
-        }
-        #selectUsuario {
+        #selectPartido, #selectUsuario {
             width: 100%;
             padding: 12px;
-            background: #1a3a4a;
+            background: #1a3a4a !important;
             border: 2px solid rgba(255,215,0,0.3);
             border-radius: 10px;
-            color: white;
+            color: white !important;
             margin-bottom: 15px;
             font-size: 0.9em;
             cursor: pointer;
         }
-        #selectUsuario option {
+        #selectPartido option, #selectUsuario option {
             color: white !important;
             background: #1a3a4a !important;
             padding: 8px;
+        }
+        .section-box {
+            background: rgba(33, 150, 243, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 25px;
+            border: 1px solid rgba(33, 150, 243, 0.2);
         }
     </style>
 </head>
@@ -137,66 +118,50 @@
         </div>
 
         <div class="stats-grid">
-            <div class="stat-card"><div class="stat-number" id="totalUsers">0</div><div>👥 Usuarios Registrados</div></div>
-            <div class="stat-card"><div class="stat-number" id="totalApuestas">0</div><div>📊 Apuestas Realizadas</div></div>
-            <div class="stat-card"><div class="stat-number" id="totalResultados">0</div><div>✅ Partidos con Resultado</div></div>
+            <div class="stat-card"><div class="stat-number" id="totalUsers">0</div><div>👥 Usuarios</div></div>
+            <div class="stat-card"><div class="stat-number" id="totalApuestas">0</div><div>📊 Apuestas</div></div>
+            <div class="stat-card"><div class="stat-number" id="totalResultados">0</div><div>✅ Resultados</div></div>
         </div>
 
         <div class="users-table">
             <h2>📋 Usuarios Registrados</h2>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead><tr><th>ID</th><th>Usuario</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Fecha</th><th>Acciones</th></tr></thead>
-                    <tbody id="usersList"></tbody>
-                </table>
-            </div>
+            <table><thead><tr><th>ID</th><th>Usuario</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Acciones</th></tr></thead>
+            <tbody id="usersList"></tbody></table>
         </div>
 
         <div class="results-section">
             <h2>⚽ Gestión de Resultados</h2>
             <p>Simula resultados de partidos para calcular puntuaciones</p>
 
-            <div style="background: rgba(255,215,0,0.05); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid rgba(255,215,0,0.2);">
+            <div style="background: rgba(255,215,0,0.05); padding: 20px; border-radius: 15px; margin: 20px 0; border: 1px solid rgba(255,215,0,0.2);">
                 <h3 style="color: #FFD700; margin-bottom: 15px;">📋 Cargar Resultado Individual</h3>
-                
-                <select id="selectPartido">
-                    <option value="" style="color: #a0c4d8; background: #1a3a4a;">Seleccionar partido...</option>
-                </select>
-                
+                <select id="selectPartido"><option value="" style="color: #a0c4d8;">Seleccionar partido...</option></select>
                 <div style="display: flex; gap: 15px; align-items: center; justify-content: center; margin-bottom: 15px;">
-                    <div style="text-align: center;">
-                        <label style="color: #c4e0f0; font-size: 0.8em;">Goles Local</label>
-                        <input type="number" id="golesLocal" min="0" max="20" placeholder="0" style="width: 80px; padding: 10px; text-align: center; font-size: 1.2em; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,215,0,0.3); border-radius: 10px; color: #FFD700;">
-                    </div>
+                    <div style="text-align: center;"><label style="color: #c4e0f0; font-size: 0.8em;">Goles Local</label>
+                    <input type="number" id="golesLocal" min="0" max="20" placeholder="0" style="width: 80px; padding: 10px; text-align: center; font-size: 1.2em; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,215,0,0.3); border-radius: 10px; color: #FFD700;"></div>
                     <span style="color: #FFD700; font-size: 1.5em; font-weight: bold;">VS</span>
-                    <div style="text-align: center;">
-                        <label style="color: #c4e0f0; font-size: 0.8em;">Goles Visitante</label>
-                        <input type="number" id="golesVisitante" min="0" max="20" placeholder="0" style="width: 80px; padding: 10px; text-align: center; font-size: 1.2em; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,215,0,0.3); border-radius: 10px; color: #FFD700;">
-                    </div>
+                    <div style="text-align: center;"><label style="color: #c4e0f0; font-size: 0.8em;">Goles Visitante</label>
+                    <input type="number" id="golesVisitante" min="0" max="20" placeholder="0" style="width: 80px; padding: 10px; text-align: center; font-size: 1.2em; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,215,0,0.3); border-radius: 10px; color: #FFD700;"></div>
                 </div>
-                
                 <button class="btn btn-primary" onclick="cargarResultadoManual()" style="width: 100%; padding: 12px; font-size: 1em;">💾 Guardar Resultado Oficial</button>
                 <div id="msgResultado" style="margin-top: 10px; padding: 10px; border-radius: 10px; display: none; text-align: center;"></div>
             </div>
 
             <div style="background: rgba(0,255,0,0.05); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid rgba(0,255,0,0.2);">
                 <h3 style="color: #00ff88; margin-bottom: 15px;">✅ Resultados Cargados</h3>
-                <div id="listaResultados" style="max-height: 300px; overflow-y: auto;">
-                    <p style="color: #a0c4d8; text-align: center;">No hay resultados cargados aún</p>
-                </div>
+                <div id="listaResultados" style="max-height: 300px; overflow-y: auto;"><p style="color: #a0c4d8; text-align: center;">No hay resultados cargados aún</p></div>
             </div>
             <button class="btn btn-success" onclick="simularResultados()">⚡ Simular Resultados</button>
             <button class="btn btn-secondary" onclick="limpiarResultados()">🗑️ Limpiar Resultados</button>
             <div id="message" class="message"></div>
         </div>
 
-        <div style="background: rgba(33, 150, 243, 0.05); padding: 20px; border-radius: 15px; margin-top: 25px; border: 1px solid rgba(33, 150, 243, 0.2);">
+        <!-- ÚNICA SECCIÓN DE VER Y EDITAR APUESTAS -->
+        <div class="section-box">
             <h3 style="color: #2196F3; margin-bottom: 15px;">👀 Ver y Editar Apuestas de Jugadores</h3>
-            
             <select id="selectUsuario" onchange="verApuestasUsuario()">
-                <option value="" style="color: #a0c4d8; background: #1a3a4a;">Seleccionar jugador...</option>
+                <option value="">Seleccionar jugador...</option>
             </select>
-            
             <div id="tablaApuestasJugador" style="max-height: 500px; overflow-y: auto;">
                 <p style="color: #a0c4d8; text-align: center; padding: 20px;">👆 Selecciona un jugador para ver sus apuestas</p>
             </div>
@@ -207,7 +172,6 @@
         const API_URL = '/api';
         let token = localStorage.getItem('token');
 
-        // ========== CHECK AUTH ==========
         async function checkAuth() {
             if (!token) { window.location.href = 'login.html'; return false; }
             const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -217,12 +181,12 @@
         }
 
         async function fetchAPI(endpoint, options = {}) {
-            const response = await fetch(`${API_URL}${endpoint}`, {
+            const res = await fetch(`${API_URL}${endpoint}`, {
                 ...options,
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, ...options.headers }
             });
-            if (response.status === 401) { localStorage.clear(); window.location.href = 'login.html'; throw new Error('No autorizado'); }
-            return response.json();
+            if (res.status === 401) { localStorage.clear(); window.location.href = 'login.html'; }
+            return res.json();
         }
 
         async function loadStats() {
@@ -236,263 +200,181 @@
             const usuarios = await fetchAPI('/usuarios');
             const tbody = document.getElementById('usersList');
             tbody.innerHTML = '';
-            for (const user of usuarios) {
+            usuarios.forEach(user => {
                 const row = tbody.insertRow();
                 row.insertCell(0).textContent = user.id;
                 row.insertCell(1).textContent = user.username;
                 row.insertCell(2).textContent = user.fullname || '-';
                 row.insertCell(3).textContent = user.email || '-';
                 row.insertCell(4).textContent = user.role === 'admin' ? '👑 Admin' : '👤 Usuario';
-                row.insertCell(5).textContent = user.fecha_registro ? new Date(user.fecha_registro).toLocaleDateString() : '-';
-                const actionsCell = row.insertCell(6);
+                const cell = row.insertCell(5);
                 if (user.role !== 'admin') {
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.textContent = '🗑️ Eliminar';
-                    deleteBtn.className = 'delete-btn';
-                    deleteBtn.onclick = () => eliminarUsuario(user.id);
-                    actionsCell.appendChild(deleteBtn);
-                } else {
-                    actionsCell.textContent = '📌';
-                }
-            }
+                    const btn = document.createElement('button');
+                    btn.textContent = '🗑️ Eliminar';
+                    btn.className = 'delete-btn';
+                    btn.onclick = () => eliminarUsuario(user.id);
+                    cell.appendChild(btn);
+                } else { cell.textContent = '📌'; }
+            });
         }
 
         async function eliminarUsuario(id) {
             if (confirm('¿Eliminar este usuario?')) {
                 await fetchAPI(`/usuarios/${id}`, { method: 'DELETE' });
-                await loadUsers();
-                await loadStats();
+                loadUsers(); loadStats();
                 showMessage('✅ Usuario eliminado', 'success');
             }
         }
 
-        // ========== CARGAR PARTIDOS ==========
+        // ========== RESULTADOS ==========
         async function cargarPartidosEnSelector() {
-            try {
-                const response = await fetch(`${API_URL}/partidos`);
-                const partidos = await response.json();
-                const select = document.getElementById('selectPartido');
-                if (!select) return;
-                select.innerHTML = '<option value="" style="color: #a0c4d8; background: #1a3a4a;">Seleccionar partido...</option>';
-                partidos.sort((a, b) => {
-                    const dateA = new Date(a.fecha.split('/').reverse().join('-'));
-                    const dateB = new Date(b.fecha.split('/').reverse().join('-'));
-                    return dateA - dateB;
-                });
-                partidos.forEach(p => {
-                    const option = document.createElement('option');
-                    option.value = p.id;
-                    option.style.color = 'white';
-                    option.style.background = '#1a3a4a';
-                    const localClean = p.local.split(' ').slice(1).join(' ');
-                    const visitClean = p.visitante.split(' ').slice(1).join(' ');
-                    option.textContent = `${p.local.split(' ')[0]} ${localClean} vs ${visitClean} ${p.visitante.split(' ')[0]} - ${p.fecha} ${p.hora}`;
-                    select.appendChild(option);
-                });
-            } catch (error) { console.error('Error cargando partidos:', error); }
+            const res = await fetch(`${API_URL}/partidos`);
+            const partidos = await res.json();
+            const select = document.getElementById('selectPartido');
+            select.innerHTML = '<option value="">Seleccionar partido...</option>';
+            partidos.sort((a, b) => new Date(a.fecha.split('/').reverse().join('-')) - new Date(b.fecha.split('/').reverse().join('-')));
+            partidos.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.textContent = `${p.local} vs ${p.visitante} - ${p.fecha} ${p.hora}`;
+                select.appendChild(opt);
+            });
         }
 
-        // ========== CARGAR RESULTADO ==========
         async function cargarResultadoManual() {
             const partidoId = document.getElementById('selectPartido').value;
-            const golesLocal = document.getElementById('golesLocal').value;
-            const golesVisitante = document.getElementById('golesVisitante').value;
+            const gl = document.getElementById('golesLocal').value;
+            const gv = document.getElementById('golesVisitante').value;
             const msg = document.getElementById('msgResultado');
-            const token = localStorage.getItem('token');
-            
-            if (!partidoId) { mostrarMensaje(msg, 'error', '❌ Selecciona un partido'); return; }
-            if (golesLocal === '' || golesVisitante === '') { mostrarMensaje(msg, 'error', '❌ Ingresa ambos goles'); return; }
-            if (!token) { mostrarMensaje(msg, 'error', '❌ No hay sesión'); return; }
-            
-            msg.style.display = 'block';
-            msg.style.background = 'rgba(255,215,0,0.2)';
-            msg.style.color = '#FFD700';
-            msg.textContent = '⏳ Guardando resultado...';
-            
-            try {
-                const response = await fetch(API_URL + '/resultados', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                    body: JSON.stringify({ partidoId: parseInt(partidoId), golesLocal: parseInt(golesLocal), golesVisitante: parseInt(golesVisitante) })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    mostrarMensaje(msg, 'success', '✅ Resultado guardado');
-                    document.getElementById('golesLocal').value = '';
-                    document.getElementById('golesVisitante').value = '';
-                    cargarResultadosCargados();
-                    loadStats();
-                } else {
-                    mostrarMensaje(msg, 'error', '❌ ' + (data.error || 'Error'));
-                }
-            } catch (error) { mostrarMensaje(msg, 'error', '❌ Error: ' + error.message); }
-        }
-
-        async function cargarResultadosCargados() {
-            try {
-                const [resultadosRes, partidosRes] = await Promise.all([fetch(`${API_URL}/resultados`), fetch(`${API_URL}/partidos`)]);
-                const resultados = await resultadosRes.json();
-                const partidos = await partidosRes.json();
-                const div = document.getElementById('listaResultados');
-                if (!resultados || resultados.length === 0) { div.innerHTML = '<p style="color: #a0c4d8; text-align: center;">No hay resultados cargados aún</p>'; return; }
-                let html = '';
-                resultados.forEach(r => {
-                    const p = partidos.find(p => p.id === r.partido_id);
-                    const localClean = p ? p.local.split(' ').slice(1).join(' ') : 'Local';
-                    const visitClean = p ? p.visitante.split(' ').slice(1).join(' ') : 'Visitante';
-                    const fecha = p ? `${p.fecha} ${p.hora}` : '';
-                    html += `<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 8px;">
-                        <span style="flex: 1; font-size: 0.85em;">${localClean} vs ${visitClean}</span>
-                        <span style="color: #FFD700; font-weight: bold; margin: 0 15px;">${r.goles_local} - ${r.goles_visitante}</span>
-                        <span style="font-size: 0.7em; color: #a0c4d8; margin-right: 10px;">${fecha}</span>
-                        <button onclick="eliminarResultado(${r.partido_id})" style="background: rgba(255,0,0,0.3); border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer;">🗑️</button>
-                    </div>`;
-                });
-                div.innerHTML = html;
-            } catch (error) { console.error('Error:', error); }
-        }
-
-        async function eliminarResultado(partidoId) {
-            if (!confirm('¿Eliminar este resultado?')) return;
-            try {
-                await fetch(`${API_URL}/resultados/${partidoId}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
-                cargarResultadosCargados();
-                loadStats();
-            } catch (error) { alert('Error al eliminar'); }
-        }
-
-        function mostrarMensaje(elemento, tipo, texto) {
-            elemento.style.display = 'block';
-            elemento.textContent = texto;
-            if (tipo === 'success') { elemento.style.background = 'rgba(0,255,0,0.2)'; elemento.style.color = '#00ff88'; }
-            else { elemento.style.background = 'rgba(255,0,0,0.2)'; elemento.style.color = '#ff8888'; }
-            setTimeout(() => { elemento.style.display = 'none'; }, 4000);
-        }
-
-        async function simularResultados() {
-            if (confirm('⚠️ ¿Simular resultados aleatorios?')) {
-                await fetchAPI('/resultados/simular-todos', { method: 'POST' });
-                showMessage('✅ Resultados simulados', 'success');
-                cargarResultadosCargados();
-                loadStats();
+            if (!partidoId || gl === '' || gv === '') { alert('Completa todos los campos'); return; }
+            const res = await fetch(`${API_URL}/resultados`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ partidoId: parseInt(partidoId), golesLocal: parseInt(gl), golesVisitante: parseInt(gv) })
+            });
+            const data = await res.json();
+            if (data.success) {
+                msg.style.display = 'block'; msg.style.background = 'rgba(0,255,0,0.2)'; msg.textContent = '✅ Guardado';
+                document.getElementById('golesLocal').value = '';
+                document.getElementById('golesVisitante').value = '';
+                cargarResultadosCargados(); loadStats();
             }
         }
 
-        function limpiarResultados() { showMessage('Funcionalidad en desarrollo', 'error'); }
+        async function cargarResultadosCargados() {
+            const [rRes, pRes] = await Promise.all([fetch(`${API_URL}/resultados`), fetch(`${API_URL}/partidos`)]);
+            const resultados = await rRes.json();
+            const partidos = await pRes.json();
+            const div = document.getElementById('listaResultados');
+            if (!resultados.length) { div.innerHTML = '<p style="color:#a0c4d8;">No hay resultados</p>'; return; }
+            div.innerHTML = resultados.map(r => {
+                const p = partidos.find(x => x.id === r.partido_id);
+                return `<div style="display:flex; justify-content:space-between; padding:10px; background:rgba(255,255,255,0.05); border-radius:10px; margin-bottom:8px;">
+                    <span>${p ? p.local + ' vs ' + p.visitante : 'Partido #'+r.partido_id}</span>
+                    <span style="color:#FFD700; font-weight:bold;">${r.goles_local} - ${r.goles_visitante}</span>
+                    <button onclick="eliminarResultado(${r.partido_id})" style="background:rgba(255,0,0,0.3); color:white; border:none; border-radius:5px; cursor:pointer;">🗑️</button>
+                </div>`;
+            }).join('');
+        }
+
+        async function eliminarResultado(id) {
+            if (confirm('¿Eliminar?')) {
+                await fetch(`${API_URL}/resultados/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                cargarResultadosCargados(); loadStats();
+            }
+        }
+
+        async function simularResultados() {
+            if (confirm('¿Simular todos?')) {
+                await fetchAPI('/resultados/simular-todos', { method: 'POST' });
+                cargarResultadosCargados(); loadStats();
+                showMessage('✅ Simulados', 'success');
+            }
+        }
+
+        function limpiarResultados() { showMessage('En desarrollo', 'error'); }
         function showMessage(msg, type) {
-            const msgDiv = document.getElementById('message');
-            msgDiv.textContent = msg;
-            msgDiv.className = `message message-${type}`;
-            msgDiv.style.display = 'block';
-            setTimeout(() => msgDiv.style.display = 'none', 3000);
+            const d = document.getElementById('message');
+            d.textContent = msg; d.className = `message message-${type}`; d.style.display = 'block';
+            setTimeout(() => d.style.display = 'none', 3000);
         }
         function logout() { localStorage.clear(); window.location.href = 'login.html'; }
 
         // ========== VER Y EDITAR APUESTAS ==========
         async function cargarUsuariosEnSelector() {
-            try {
-                const response = await fetch(API_URL + '/usuarios');
-                const usuarios = await response.json();
-                const select = document.getElementById('selectUsuario');
-                if (!select) return;
-                select.innerHTML = '<option value="" style="color: #a0c4d8; background: #1a3a4a;">Seleccionar jugador...</option>';
-                usuarios.forEach(u => {
-                    if (u.role !== 'admin') {
-                        const option = document.createElement('option');
-                        option.value = u.id;
-                        option.textContent = u.username + ' (' + u.fullname + ')';
-                        option.style.color = 'white';
-                        option.style.background = '#1a3a4a';
-                        select.appendChild(option);
-                    }
-                });
-            } catch(e) { console.error('Error:', e); }
+            const res = await fetch(`${API_URL}/usuarios`);
+            const usuarios = await res.json();
+            const select = document.getElementById('selectUsuario');
+            select.innerHTML = '<option value="">Seleccionar jugador...</option>';
+            usuarios.filter(u => u.role !== 'admin').forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u.id;
+                opt.textContent = `${u.username} (${u.fullname})`;
+                select.appendChild(opt);
+            });
         }
 
         async function verApuestasUsuario() {
-            const usuarioId = document.getElementById('selectUsuario').value;
+            const uid = document.getElementById('selectUsuario').value;
             const div = document.getElementById('tablaApuestasJugador');
-            const token = localStorage.getItem('token');
-            if (!usuarioId) { div.innerHTML = '<p style="color: #a0c4d8; text-align: center;">👆 Selecciona un jugador</p>'; return; }
-            div.innerHTML = '<p style="color: #FFD700; text-align: center;">⏳ Cargando...</p>';
-            try {
-                const [apuestasRes, partidosRes, resultadosRes] = await Promise.all([
-                    fetch(API_URL + '/apuestas/usuario/' + usuarioId, { headers: { 'Authorization': 'Bearer ' + token } }),
-                    fetch(API_URL + '/partidos'),
-                    fetch(API_URL + '/resultados')
-                ]);
-                const apuestas = await apuestasRes.json();
-                const partidos = await partidosRes.json();
-                const resultados = await resultadosRes.json();
-                if (!apuestas || apuestas.length === 0) { div.innerHTML = '<p style="color: #a0c4d8;">📭 Sin apuestas</p>'; return; }
-                
-                let html = '<table style="width:100%; font-size:0.8em; border-collapse:collapse;"><tr style="border-bottom:2px solid rgba(255,215,0,0.3);"><th style="padding:6px; color:#FFD700;">Partido</th><th style="padding:6px; color:#FFD700;">Apuesta</th><th style="padding:6px; color:#FFD700;">Resultado</th><th style="padding:6px; color:#FFD700;">Acción</th></tr>';
-                
-                apuestas.forEach(a => {
-                    const p = partidos.find(p => p.id === a.partido_id);
-                    const r = resultados.find(r => r.partido_id === a.partido_id);
-                    const nombre = p ? `${p.local.split(' ').slice(1).join(' ')} vs ${p.visitante.split(' ').slice(1).join(' ')}` : 'Partido #' + a.partido_id;
-                    const partidoYaInicio = r ? true : false;
-                    html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.1);" id="fila_' + a.partido_id + '"><td style="padding:6px;">' + nombre + '</td>';
-                    if (partidoYaInicio) {
-                        html += `<td style="padding:6px; text-align:center; color:#ff8888;">${a.goles_local} - ${a.goles_visitante} 🔒</td><td style="padding:6px; text-align:center;">${r.goles_local} - ${r.goles_visitante}</td><td style="padding:6px; text-align:center;">🔒</td>`;
-                    } else {
-                        html += `<td style="padding:6px; text-align:center;"><input type="number" id="edit_local_${a.partido_id}" value="${a.goles_local}" min="0" max="20" style="width:40px; padding:4px; text-align:center; background:rgba(255,255,255,0.1); border:1px solid rgba(255,215,0,0.3); border-radius:5px; color:#FFD700;"> - <input type="number" id="edit_visit_${a.partido_id}" value="${a.goles_visitante}" min="0" max="20" style="width:40px; padding:4px; text-align:center; background:rgba(255,255,255,0.1); border:1px solid rgba(255,215,0,0.3); border-radius:5px; color:#FFD700;"></td><td style="padding:6px; text-align:center;">⏳</td><td style="padding:6px; text-align:center;"><button onclick="guardarApuestaAdmin(${usuarioId}, ${a.partido_id})" style="background: linear-gradient(45deg, #FFD700, #FFA500); color:#0a1f2e; border:none; padding:4px 8px; border-radius:5px; cursor:pointer; font-weight:bold; font-size:0.7em;">💾</button></td>`;
-                    }
-                    html += '</tr>';
-                });
-                html += '</table><div style="text-align:center; margin-top:15px;"><button onclick="guardarTodasApuestasAdmin(' + usuarioId + ')" style="background: linear-gradient(45deg, #FFD700, #FFA500); color:#0a1f2e; border:none; padding:10px 30px; border-radius:10px; cursor:pointer; font-weight:bold;">💾 Guardar Todos los Cambios</button></div>';
-                div.innerHTML = html;
-            } catch(e) { div.innerHTML = '<p style="color:#ff6666;">❌ Error</p>'; }
+            if (!uid) { div.innerHTML = '<p style="color:#a0c4d8;">Selecciona un jugador</p>'; return; }
+            div.innerHTML = '<p style="color:#FFD700;">Cargando...</p>';
+            const [aRes, pRes, rRes] = await Promise.all([
+                fetch(`${API_URL}/apuestas/usuario/${uid}`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                fetch(`${API_URL}/partidos`), fetch(`${API_URL}/resultados`)
+            ]);
+            const apuestas = await aRes.json();
+            const partidos = await pRes.json();
+            const resultados = await rRes.json();
+            if (!apuestas.length) { div.innerHTML = '<p style="color:#a0c4d8;">Sin apuestas</p>'; return; }
+            div.innerHTML = `<table style="width:100%; font-size:0.8em;"><tr><th>Partido</th><th>Apuesta</th><th>Resultado</th><th>Acción</th></tr>` +
+            apuestas.map(a => {
+                const p = partidos.find(x => x.id === a.partido_id);
+                const r = resultados.find(x => x.partido_id === a.partido_id);
+                const bloqueado = !!r;
+                return `<tr>
+                    <td>${p ? p.local + ' vs ' + p.visitante : '#'+a.partido_id}</td>
+                    ${bloqueado ? `<td style="color:#ff8888;">${a.goles_local}-${a.goles_visitante} 🔒</td><td>${r.goles_local}-${r.goles_visitante}</td><td>🔒</td>` :
+                    `<td><input id="el_${a.partido_id}" value="${a.goles_local}" style="width:35px; background:#1a3a4a; color:#FFD700; border:1px solid #FFD700; border-radius:4px; text-align:center;"> - <input id="ev_${a.partido_id}" value="${a.goles_visitante}" style="width:35px; background:#1a3a4a; color:#FFD700; border:1px solid #FFD700; border-radius:4px; text-align:center;"></td>
+                    <td>⏳</td>
+                    <td><button onclick="guardarApuestaAdmin(${uid},${a.partido_id})" style="background:#FFD700; color:#0a1f2e; border:none; border-radius:5px; cursor:pointer;">💾</button></td>`}
+                </tr>`;
+            }).join('') + '</table>' +
+            `<div style="text-align:center; margin-top:15px;"><button onclick="guardarTodasApuestasAdmin(${uid})" style="background:#FFD700; color:#0a1f2e; border:none; padding:10px 30px; border-radius:10px; cursor:pointer; font-weight:bold;">💾 Guardar Todos</button></div>`;
         }
 
-        async function guardarApuestaAdmin(usuarioId, partidoId) {
-            const localInput = document.getElementById('edit_local_' + partidoId);
-            const visitInput = document.getElementById('edit_visit_' + partidoId);
-            const token = localStorage.getItem('token');
-            const golesLocal = parseInt(localInput?.value) || 0;
-            const golesVisitante = parseInt(visitInput?.value) || 0;
-            try {
-                const response = await fetch(API_URL + '/apuestas/admin/actualizar', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                    body: JSON.stringify({ usuarioId: parseInt(usuarioId), partidoId, golesLocal, golesVisitante })
-                });
-                const data = await response.json();
-                if (data.success) alert('✅ Apuesta actualizada');
-                else alert('❌ Error');
-            } catch(e) { alert('❌ Error de conexión'); }
-        }
-
-        async function guardarTodasApuestasAdmin(usuarioId) {
-            const token = localStorage.getItem('token');
-            const apuestas = [];
-            document.querySelectorAll('input[id^="edit_local_"]').forEach(input => {
-                const partidoId = parseInt(input.id.replace('edit_local_', ''));
-                const visitInput = document.getElementById('edit_visit_' + partidoId);
-                if (visitInput) apuestas.push({ partidoId, golesLocal: parseInt(input.value) || 0, golesVisitante: parseInt(visitInput.value) || 0 });
+        async function guardarApuestaAdmin(uid, pid) {
+            const gl = parseInt(document.getElementById('el_' + pid)?.value) || 0;
+            const gv = parseInt(document.getElementById('ev_' + pid)?.value) || 0;
+            await fetch(`${API_URL}/apuestas/admin/actualizar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ usuarioId: parseInt(uid), partidoId: pid, golesLocal: gl, golesVisitante: gv })
             });
-            if (!confirm(`¿Guardar ${apuestas.length} apuestas?`)) return;
-            try {
-                const response = await fetch(API_URL + '/apuestas/admin/actualizar-todas', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                    body: JSON.stringify({ usuarioId: parseInt(usuarioId), apuestas })
-                });
-                const data = await response.json();
-                if (data.success) { alert('✅ Apuestas actualizadas'); verApuestasUsuario(); }
-                else alert('❌ Error');
-            } catch(e) { alert('❌ Error de conexión'); }
+            alert('✅ Guardado');
+        }
+
+        async function guardarTodasApuestasAdmin(uid) {
+            const apuestas = [];
+            document.querySelectorAll('input[id^="el_"]').forEach(input => {
+                const pid = parseInt(input.id.replace('el_', ''));
+                const gv = document.getElementById('ev_' + pid)?.value || 0;
+                apuestas.push({ partidoId: pid, golesLocal: parseInt(input.value) || 0, golesVisitante: parseInt(gv) || 0 });
+            });
+            if (!confirm(`Guardar ${apuestas.length} apuestas?`)) return;
+            await fetch(`${API_URL}/apuestas/admin/actualizar-todas`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ usuarioId: parseInt(uid), apuestas })
+            });
+            alert('✅ Guardado'); verApuestasUsuario();
         }
 
         // ========== INICIALIZAR ==========
         document.addEventListener('DOMContentLoaded', async () => {
             if (await checkAuth()) {
-                await loadStats();
-                await loadUsers();
-                cargarPartidosEnSelector();
-                cargarResultadosCargados();
-                cargarUsuariosEnSelector();
+                loadStats(); loadUsers();
+                cargarPartidosEnSelector(); cargarResultadosCargados(); cargarUsuariosEnSelector();
             }
         });
     </script>

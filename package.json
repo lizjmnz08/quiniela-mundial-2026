@@ -1,12 +1,15 @@
 {
-  "name": "quiniela-mundial-2026",
+  "name": "quiniela-mundial-backend",
   "version": "1.0.0",
-  "description": "Quiniela Mundial 2026",
+  "main": "server.js",
   "scripts": {
-    "build": "cd backend && npm install",
-    "start": "cd backend && node server.js"
+    "start": "node server.js"
   },
-  "engines": {
-    "node": "18.x"
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "pg": "^8.11.3",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
   }
 }

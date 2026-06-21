@@ -716,7 +716,6 @@
     const completado = !!resultado;
     const apuesta = apuestasUsuario.find(a => a.partido_id === partido.id);
     
-    // 🆕 Verificar si el partido ya comenzó
     const yaInicio = partidoYaInicio(partido);
     const bloqueado = completado || yaInicio;
     
@@ -724,6 +723,27 @@
     const codVisit = obtenerCodigoPais(partido.visitante);
     const localClean = obtenerNombreLimpio(partido.local);
     const visitClean = obtenerNombreLimpio(partido.visitante);
+    
+    // 🆕 Calcular puntos si hay resultado y apuesta
+    let puntosHTML = '';
+    if (completado && apuesta) {
+        const glReal = parseInt(resultado.goles_local);
+        const gvReal = parseInt(resultado.goles_visitante);
+        const glApost = parseInt(apuesta.goles_local);
+        const gvApost = parseInt(apuesta.goles_visitante);
+        
+        if (glApost === glReal && gvApost === gvReal) {
+            puntosHTML = '<div style="color:#FFD700; font-size:1.2em;">⭐ +3</div>';
+        } else if (
+            (glApost > gvApost && glReal > gvReal) ||
+            (glApost < gvApost && glReal < gvReal) ||
+            (glApost === gvApost && glReal === gvReal)
+        ) {
+            puntosHTML = '<div style="color:#00ff88; font-size:1.2em;">✓ +1</div>';
+        } else {
+            puntosHTML = '<div style="color:#ff4444; font-size:1.2em;">✗ 0</div>';
+        }
+    }
     
     card.innerHTML = `
         <div class="match-header">
@@ -752,6 +772,7 @@
         ${completado ? 
             `<div style="margin-top:12px; text-align:center; background:rgba(0,255,136,0.15); padding:5px; border-radius:8px;">
                 📊 Resultado: ${resultado.goles_local} - ${resultado.goles_visitante}
+                ${puntosHTML}
             </div>` : 
             yaInicio ? 
             `<div style="margin-top:12px; text-align:center; background:rgba(255,100,100,0.2); padding:5px; border-radius:8px; color:#ff6666;">
@@ -761,7 +782,6 @@
     `;
     return card;
 }
-
 
   window.actualizarApuesta = async function(partidoId, tipo, valor) {
     let val = parseInt(valor) || 0;
@@ -1014,10 +1034,13 @@ setInterval(function() {
 }, 2000);
 
 // Exponer variables globalmente para debug
-window.partidosGlobales = partidosGlobales;
-window.apuestasUsuario = apuestasUsuario;
-window.resultadosGlobales = resultadosGlobales;
-window.cargarDatos = cargarDatos;
+// Exponer variables después de cargar datos
+setTimeout(function() {
+    window.partidosGlobales = partidosGlobales;
+    window.apuestasUsuario = apuestasUsuario;
+    window.resultadosGlobales = resultadosGlobales;
+    console.log('✅ Variables expuestas globalmente');
+}, 3000);
 
     </script>
 </body>

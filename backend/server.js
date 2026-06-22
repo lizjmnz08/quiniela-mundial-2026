@@ -5,6 +5,16 @@ const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const SECRET_KEY = process.env.SECRET_KEY || 'quiniela_secret_key_2026';
@@ -411,27 +421,30 @@ app.delete('/api/apuestas/mis-apuestas', verificarToken, async (req, res) => {
 app.post('/api/auth/recuperar-password', async (req, res) => {
     try {
         const { email } = req.body;
+        if (!email) return res.status(400).json({ success: false, error: 'Email requerido' });
         
-        if (!email) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Email es requerido' 
-            });
-        }
+        const user = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+        if (user.rows.length === 0) return res.json({ success: false, error: 'Email no encontrado' });
         
-        // Buscar usuario por email
-        const user = await pool.query(
-            'SELECT * FROM usuarios WHERE email = $1', 
-            [email]
-        );
+        const codigo = Math.floor(100000 + Math.random() * 900000).toString();
+        await pool.query('UPDATE usuarios SET reset_codigo = $1, reset_expiracion = NOW() + INTERVAL \'15 minutes\' WHERE email = $2', [codigo, email]);
         
-        if (user.rows.length === 0) {
-            return res.json({ 
-                success: false, 
-                error: 'No existe una cuenta con este email' 
-            });
-        }
+        // Enviar email real
+        await transporter.sendMail({
+            from: '"Quiniela Mundial 2026" <' + process.env.EMAIL_USER + '>',
+            to: email,
+            subject: '🔑 Código de Recuperación',
+            html: '<h1 style="color:#FFD700;">⚽ Quiniela Mundial 2026</h1><h2>Código: <span style="font-size:32px;">' + codigo + '</span></h2><p>Expira en 15 minutos.</p>'
+        });
         
+        console.log('📧 Email enviado a ' + email);
+        res.json({ success: true, message: 'Código enviado a tu email' });
+        
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ success: false, error: 'Error al enviar email' });
+    }
+});        
         // Generar código aleatorio de 6 dígitos
         const codigo = Math.floor(100000 + Math.random() * 900000).toString();
         

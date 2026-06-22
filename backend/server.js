@@ -765,6 +765,17 @@ app.get('/api/apuestas/usuario/:id', verificarToken, async (req, res) => {
     res.json(result.rows);
 });
     }
+    // Cambiar contraseña directo (solo admin)
+app.post('/api/admin/cambiar-clave', verificarToken, async (req, res) => {
+    if (req.usuario.role !== 'admin') return res.status(403).json({ error: 'Solo admin' });
+    
+    const { username, password } = req.body;
+    const bcrypt = require('bcryptjs');
+    const hash = await bcrypt.hash(password, 10);
+    
+    await pool.query('UPDATE usuarios SET password = $1 WHERE username = $2', [hash, username]);
+    res.json({ success: true });
+});
 }
 
 startServer();

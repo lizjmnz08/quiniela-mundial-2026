@@ -347,8 +347,8 @@
         }
         
         let html = '<table style="width:100%; font-size:0.8em; border-collapse:collapse;">';
-        html += '<tr><th style="padding:6px; color:#FFD700;">Partido</th><th style="padding:6px; color:#FFD700;">Apuesta</th><th style="padding:6px; color:#FFD700;">Resultado</th><th style="padding:6px; color:#FFD700;">Pts</th><th style="padding:6px; color:#FFD700;">Acción</th></tr>';
-        
+        html += '<tr><th style="padding:6px; color:#FFD700;">Partido</th><th style="padding:6px; color:#FFD700;">Fecha</th><th style="padding:6px; color:#FFD700;">Apuesta</th><th style="padding:6px; color:#FFD700;">Resultado</th><th style="padding:6px; color:#FFD700;">Pts</th><th style="padding:6px; color:#FFD700;">Acción</th></tr>';
+            
         apuestas.forEach(a => {
             const p = partidos.find(x => x.id === a.partido_id);
             const r = resultados.find(x => x.partido_id === a.partido_id);
